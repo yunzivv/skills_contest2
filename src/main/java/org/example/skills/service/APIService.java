@@ -77,4 +77,12 @@ public class APIService {
 
         return rowsAffected == 1;
     }
+
+    public boolean deleteCustomer(String code, String name) {
+
+        String sql = "DELETE FROM customer WHERE code = ? AND name = ?";
+        int rowsAffected = jdbc.update(sql, code, name);
+
+        return rowsAffected == 1;
+    }
 }

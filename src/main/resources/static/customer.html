@@ -137,11 +137,9 @@
                 height: 100%;
                 width: 50%;
             }
-
-
         </style>
 
-        <!--조회-->
+        <!-- query -->
         <script>
             let selectedCustomer = null;
             const tableContainer = document.getElementById('customer_container');
@@ -159,10 +157,7 @@
             }
 
             function renderTable(rows) {
-                if (!Array.isArray(rows) || rows.length === 0) {
-                    tableContainer.innerHTML = '<div style="color:#666;padding:10px;">조회 결과가 없습니다.</div>';
-                    return;
-                }
+
                 let html = '<table id="customer_table" style="width:100%; border-collapse:collapse;">';
                 html += '<thead style="position: sticky;"><tr>';
                 ['code', 'name', 'birth', 'tel', 'address', 'company'].forEach(h => {
@@ -192,7 +187,6 @@
 
             btnAll.addEventListener('click', () => loadCustomers());
             loadCustomers();
-
 
             <!-- click -->
             $(document).on("click", "#customer_table tr", function () {
@@ -241,20 +235,35 @@
                 const formEl = document.getElementById('updateForm');
                 const formData = new FormData(formEl);
 
-                const resp = await fetch('/api/customer', {
+                const updateRes = await fetch('/api/customer', {
                     method: 'POST',
                     body: formData
                 });
 
-                const isSuccess = await resp.json();
+                const updateRs = await updateRes.json();
 
-                if (isSuccess) {
+                if (updateRs) {
+                    alert("고객 수정이 완료되었습니다.")
+                    closeModal("updateModal");
                     await loadCustomers();
-                } else {
-                    console.log('update failed from server');
-                }
+                } else alert("입력을 확인해주세요.");
             }
 
+            // delete
+            $('#delete').click(async function () {
+
+                if (selectedCustomer !== null) {
+
+                    if (confirm(selectedCustomer.name + "님을 정말 삭제하시겠습니까?")) {
+
+                        const delRq = `/api/customer?code=${selectedCustomer.code}&name=${selectedCustomer.name}`;
+
+                        const deleteRes = await fetch(delRq, {method: 'DELETE'});
+                        const deleteRs = await deleteRes.json();
+                        if(deleteRs) await loadCustomers();
+                    }
+                }
+            });
 
             function closeModal(id) {
                 $("#" + id).addClass('hidden');

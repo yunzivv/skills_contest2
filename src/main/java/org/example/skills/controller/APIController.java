@@ -28,8 +28,7 @@ public class APIController {
     public boolean register(@RequestParam String name, @RequestParam String birth, @RequestParam String tel,
                             @RequestParam(required = false) String address, @RequestParam(required = false) String company) {
 
-        if(name == null || birth == null || tel == null)return false;
-        if(name.trim().isEmpty() || birth.trim().isEmpty() || tel.trim().isEmpty()) return false;
+        if(isEmpty(name) || isEmpty(birth) || isEmpty(tel) || isEmpty(address) || isEmpty(company)) return false;
 
         String code = "S25";
         String[] birthStr = birth.split("-");
@@ -39,13 +38,24 @@ public class APIController {
     }
 
     @GetMapping("/customer")
-    public List<Customer> customers(@RequestParam(required = false) String keyword) {
+    public List<Customer> list(@RequestParam(required = false) String keyword) {
         return apiService.getCustomers(keyword);
     }
 
     @PostMapping("/customer")
     public boolean update(@RequestParam String code, String name, String birth, String tel, String address, String company) {
+        if(isEmpty(code) || isEmpty(name) || isEmpty(birth) || isEmpty(tel) || isEmpty(address) || isEmpty(company)) return false;
         return apiService.updateCustomer(code, name, birth, tel, address, company);
+    }
+
+    @DeleteMapping("/customer")
+    public boolean delete(@RequestParam String code, String name) {
+        if(isEmpty(code) || isEmpty(name)) return false;
+        return apiService.deleteCustomer(code, name);
+    }
+
+    boolean isEmpty(String str){
+        return str == null || str.trim().isEmpty();
     }
 
 }
