@@ -27,4 +27,8 @@ public class Admin {
     private String jumin;
     private Date inputDate;
 
+    public Admin(String name) {
+        this.name = name;
+    }
+
 }

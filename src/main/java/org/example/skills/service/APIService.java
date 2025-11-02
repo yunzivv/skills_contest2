@@ -1,6 +1,7 @@
 // src/main/java/org/example/skills/service/MemberService.java
 package org.example.skills.service;
 
+import org.example.skills.vo.Admin;
 import org.example.skills.vo.Contract;
 import org.example.skills.vo.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,10 @@ public class APIService {
 //            rs.getDate("regDate"),
 //            rs.getInt("monthPrice"),
 //            rs.getString("adminName")
+    );
+
+    private final RowMapper<Admin> adminRowMapper = (rs, i) -> new Admin(
+            rs.getString("name")
     );
 
     public boolean login(String name, String passwd) {
@@ -87,5 +92,9 @@ public class APIService {
 
     public List<Contract> getContract() {
         return jdbc.query("SELECT DISTINCT contractName FROM contract", contractRowMapper);
+    }
+
+    public List<Admin> getAdmin() {
+        return jdbc.query("SELECT name FROM admin", adminRowMapper);
     }
 }

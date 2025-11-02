@@ -1,6 +1,7 @@
 package org.example.skills.controller;
 
 import org.example.skills.service.APIService;
+import org.example.skills.vo.Admin;
 import org.example.skills.vo.Contract;
 import org.example.skills.vo.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,11 +64,14 @@ public class APIController {
 
     @GetMapping("/contract")
     public List<Contract> getContract() {
-        List<Contract> li = apiService.getContract();
-
         return apiService.getContract();
     }
 
+
+    @GetMapping("/admin")
+    public List<Admin> getAdmin() {
+        return apiService.getAdmin();
+    }
 
 
     boolean isEmpty(String str){
