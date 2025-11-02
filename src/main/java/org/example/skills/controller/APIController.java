@@ -3,10 +3,8 @@ package org.example.skills.controller;
 import org.example.skills.service.APIService;
 import org.example.skills.vo.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -40,9 +38,13 @@ public class APIController {
         return apiService.register(code, name, birth, tel, address, company);
     }
 
-    @GetMapping("/customers")
+    @GetMapping("/customer")
     public List<Customer> customers(@RequestParam(required = false) String keyword) {
+        return apiService.getCustomers(keyword);
+    }
 
+    @PutMapping("/customer")
+    public List<Customer> update(@RequestParam(required = false) String keyword) {
         return apiService.getCustomers(keyword);
     }
 

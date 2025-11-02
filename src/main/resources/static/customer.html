@@ -14,7 +14,7 @@
         <!--search-->
         <div style="height:50px; display: flex; justify-content: center; align-items: center; gap: 10px;">
             성명
-            <form id="searchForm" action="/api/customers">
+            <form id="searchForm" action="/api/customer">
                 <input name="keyword" type="text" style="padding:8px 20px;">
                 <button type="submit"
                         style="padding:8px 20px;background:#dfdfdf;border-radius:10px;border:none;font-size:1rem;">
@@ -26,10 +26,12 @@
                     style="padding: 8px 20px; background-color:#dfdfdf; border-radius:10px; border: none; font-size:1rem;">
                 전체보기
             </button>
-            <button style="padding: 8px 20px; background-color:#dfdfdf; border-radius:10px; border: none; font-size:1rem;">
+            <button id="update"
+                    style="padding: 8px 20px; background-color:#dfdfdf; border-radius:10px; border: none; font-size:1rem;">
                 수정
             </button>
-            <button style="padding: 8px 20px; background-color:#dfdfdf; border-radius:10px; border: none; font-size:1rem;">
+            <button id="delete"
+                    style="padding: 8px 20px; background-color:#dfdfdf; border-radius:10px; border: none; font-size:1rem;">
                 삭제
             </button>
             <a href="/management.html"
@@ -50,7 +52,7 @@
 
         <!--조회-->
         <script>
-
+            let selectedCustomer = null;
             const tableContainer = document.getElementById('customer_container');
             const searchForm = document.getElementById('searchForm');
             const btnAll = document.getElementById('all');
@@ -78,13 +80,13 @@
                 html += '</tr></thead><tbody>';
 
                 for (const r of rows) {
-                    html += '<tr id="" style="cursor: pointer">';
-                    html += `<td style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.code}</td>`;
-                    html += `<td style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.name}</td>`;
-                    html += `<td style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${(r.birth).toString().substring(0, 10)}</td>`;
-                    html += `<td style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.tel ?? ''}</td>`;
-                    html += `<td style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.address ?? ''}</td>`;
-                    html += `<td style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.company ?? ''}</td>`;
+                    html += '<tr style="cursor: pointer">';
+                    html += `<td class="code" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.code}</td>`;
+                    html += `<td class="name" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.name}</td>`;
+                    html += `<td class="birth" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${(r.birth).toString().substring(0, 10)}</td>`;
+                    html += `<td class="tel" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.tel ?? ''}</td>`;
+                    html += `<td class="address" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.address ?? ''}</td>`;
+                    html += `<td class="company" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.company ?? ''}</td>`;
                     html += '</tr>';
                 }
                 html += '</tbody></table>';
@@ -99,14 +101,31 @@
 
             btnAll.addEventListener('click', () => loadCustomers());
             loadCustomers();
-        </script>
 
-        <!--수정-->
-        <script>
+
+            <!-- click -->
             $(document).on("click", "#customer_table tr", function(){
+
+                let code = $(this).find('td')[0].textContent;
+                let name = $(this).find('td')[1].textContent;
+                let birth = $(this).find('td')[2].textContent;
+                let tel = $(this).find('td')[3].textContent;
+                let address = $(this).find('td')[4].textContent;
+                let company = $(this).find('td')[5].textContent;
+
+                selectedCustomer = {
+                    code,
+                    name,
+                    birth,
+                    tel,
+                    address,
+                    company
+                }
+
                 $(this).siblings().removeClass('selected');
                 $(this).addClass("selected");
             });
+
 
         </script>
     </div>
