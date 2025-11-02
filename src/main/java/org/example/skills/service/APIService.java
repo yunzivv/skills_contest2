@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -69,5 +68,13 @@ public class APIService {
         System.out.println(customers.size());
 
         return customers;
+    }
+
+    public boolean updateCustomer(String code, String name, String birth, String tel, String address, String company) {
+
+        String sql = "UPDATE customer SET birth = ?, tel = ?, address = ?, company = ?  WHERE code = ? AND name = ?";
+        int rowsAffected = jdbc.update(sql, java.sql.Date.valueOf(birth), tel, address, company, code, name);
+
+        return rowsAffected == 1;
     }
 }

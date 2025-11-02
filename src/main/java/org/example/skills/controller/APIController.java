@@ -43,9 +43,9 @@ public class APIController {
         return apiService.getCustomers(keyword);
     }
 
-    @PutMapping("/customer")
-    public List<Customer> update(@RequestParam(required = false) String keyword) {
-        return apiService.getCustomers(keyword);
+    @PostMapping("/customer")
+    public boolean update(@RequestParam String code, String name, String birth, String tel, String address, String company) {
+        return apiService.updateCustomer(code, name, birth, tel, address, company);
     }
 
 }
