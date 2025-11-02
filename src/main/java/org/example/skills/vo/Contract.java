@@ -20,8 +20,7 @@ public class Contract {
     private int monthPrice;
     private String adminName;
 
-    public Contract(String customerCode, String contractName) {
-        this.customerCode = customerCode;
+    public Contract(String contractName) {
         this.contractName = contractName;
     }
 }

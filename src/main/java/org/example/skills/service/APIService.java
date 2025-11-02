@@ -1,14 +1,13 @@
 // src/main/java/org/example/skills/service/MemberService.java
 package org.example.skills.service;
 
+import org.example.skills.vo.Contract;
 import org.example.skills.vo.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -16,6 +15,24 @@ public class APIService {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    private final RowMapper<Customer> customerRowMapper = (rs, i) -> new Customer(
+            rs.getString("code"),
+            rs.getString("name"),
+            rs.getDate("birth"),
+            rs.getString("tel"),
+            rs.getString("address"),
+            rs.getString("company")
+    );
+
+    private final RowMapper<Contract> contractRowMapper = (rs, i) -> new Contract(
+//            rs.getString("customerCode"),
+            rs.getString("contractName")
+//            rs.getInt("regPrice"),
+//            rs.getDate("regDate"),
+//            rs.getInt("monthPrice"),
+//            rs.getString("adminName")
+    );
 
     public boolean login(String name, String passwd) {
         Boolean ok = jdbc.queryForObject(
@@ -37,37 +54,19 @@ public class APIService {
     public List<Customer> getCustomers(String keyword) {
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            return jdbc.query("SELECT * FROM customer",
-                    (rs,i)-> new Customer(
-                            rs.getString("code"),
-                            rs.getString("name"),
-                            rs.getDate("birth"),
-                            rs.getString("tel"),
-                            rs.getString("address"),
-                            rs.getString("company")
-                    )
-            );
+            return jdbc.query("SELECT * FROM customer", customerRowMapper);
         }
 
         String sql = "SELECT * FROM customer WHERE `name` LIKE CONCAT('%', ?, '%')";
-        List<Customer> customers = jdbc.query(sql,
-                new RowMapper<Customer>() {
-                    @Override
-                    public Customer mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-                        Customer customer = new Customer(
-                                resultSet.getString("code"),
-                                resultSet.getString("name"),
-                                resultSet.getDate("birth"),
-                                resultSet.getString("tel"),
-                                resultSet.getString("address"),
-                                resultSet.getString("company")
-                        );
-                        return customer;
-                    }
-                }, keyword);
-        System.out.println(customers.size());
-
+        List<Customer> customers = jdbc.query(sql, customerRowMapper, keyword);
         return customers;
+    }
+
+    public Customer getCustomer(String name) {
+        if(name == null || name.trim().isEmpty()) {
+            return jdbc.queryForObject("SELECT * FROM customer LIMIT 1", customerRowMapper);
+        }
+        return jdbc.queryForObject("SELECT * FROM customer WHERE name = ? LIMIT 1", customerRowMapper, name);
     }
 
     public boolean updateCustomer(String code, String name, String birth, String tel, String address, String company) {
@@ -84,5 +83,9 @@ public class APIService {
         int rowsAffected = jdbc.update(sql, code, name);
 
         return rowsAffected == 1;
+    }
+
+    public List<Contract> getContract() {
+        return jdbc.query("SELECT DISTINCT contractName FROM contract", contractRowMapper);
     }
 }

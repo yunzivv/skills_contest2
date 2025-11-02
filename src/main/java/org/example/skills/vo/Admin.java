@@ -21,15 +21,10 @@ public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private String passwd;
     private String position;
     private String jumin;
     private Date inputDate;
 
-    public Admin(String name, String passwd) {
-        this.name = name;
-        this.passwd = passwd;
-    }
 }

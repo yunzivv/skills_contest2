@@ -1,6 +1,7 @@
 package org.example.skills.controller;
 
 import org.example.skills.service.APIService;
+import org.example.skills.vo.Contract;
 import org.example.skills.vo.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,11 @@ public class APIController {
         return apiService.getCustomers(keyword);
     }
 
+    @GetMapping("/customer/{name}")
+    public Customer getCustomer(@PathVariable(required = false) String name) {
+        return apiService.getCustomer(name);
+    }
+
     @PostMapping("/customer")
     public boolean update(@RequestParam String code, String name, String birth, String tel, String address, String company) {
         if(isEmpty(code) || isEmpty(name) || isEmpty(birth) || isEmpty(tel) || isEmpty(address) || isEmpty(company)) return false;
@@ -53,6 +59,16 @@ public class APIController {
         if(isEmpty(code) || isEmpty(name)) return false;
         return apiService.deleteCustomer(code, name);
     }
+
+
+    @GetMapping("/contract")
+    public List<Contract> getContract() {
+        List<Contract> li = apiService.getContract();
+
+        return apiService.getContract();
+    }
+
+
 
     boolean isEmpty(String str){
         return str == null || str.trim().isEmpty();

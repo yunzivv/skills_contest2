@@ -3,13 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <title>계약 관리</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body style="margin: 0; padding: 0;">
 <div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #eeeeee;">
-    <div style="width: 40%; height: 60%; margin-bottom: 50px;
-    text-align: center; padding: 30px 100px; font-size: 1.5rem;
-    border-radius: 10px; background-color: white;">
+    <div style="width: 40%; height: 80%; margin-bottom: 30px; text-align: center; padding: 30px 100px;
+    display: flex; flex-direction: column; border-radius: 10px; background-color: white;">
+
+        <div>
+            <form id="contractsForm" action="">
+                <ul>
+                    <li>
+                        <div>고객코드:</div>
+                        <input type="text" id="code" name="code" readonly>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>고 객 명:</div>
+                        <select id="name" name="name">
+                        </select>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>생년월일:</div>
+                        <input type="date" id="birth" name="birth" readonly>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>연 락 처:</div>
+                        <input type="tel" id="tel" name="tel" readonly>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>보험상품:</div>
+                        <select id="contractName" name="contractName">
+                        </select>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>가입금액:</div>
+                        <input type="text" id="regPrice" name="regPrice">
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>월보험료:</div>
+                        <input type="text" id="monthPrice" name="monthPrice">
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <div>
+            담당자:
+            <form action="">
+                <select name="admint" id="admin"></select>
+            </form>
+        </div>
+        <div>
+            < 고객 보험 계약 현황 >
+        </div>
+
     </div>
+
+    <style>
+        ul, a {
+            list-style: none;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+        }
+
+
+    </style>
+
+    <script>
+        const formContainer = document.getElementById('contractsForm');
+        const customerList = document.getElementById('name');
+        const contractList = document.getElementById('contractName');
+
+        // fetch select list
+        async function fetchSelect() {
+
+            // customer
+            const customersRq = "/api/customer";
+            const customersRes = await fetch(customersRq, {method: 'GET'});
+            const customerRows = await customersRes.json();
+
+            let customerHtml = "";
+            for (const r of customerRows) {
+                customerHtml += `<option class="name" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.name}</option>`;
+            }
+            fetchCustomer(customerRows[0]);
+            customerList.innerHTML = customerHtml;
+
+            // contract
+            const contractRq = "/api/contract";
+            const contractRes = await fetch(contractRq, {method: 'GET'});
+            const contractRows = await contractRes.json();
+
+            let contractHtml = "";
+            for (const r of contractRows) {
+                contractHtml += `<option class="contractName" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.contractName}</option>`;
+            }
+            contractList.innerHTML = contractHtml;
+        }
+        fetchSelect()
+
+        function fetchCustomer(selectedCustomer){
+            $('#code').val(selectedCustomer.code);
+            $('#name').val(selectedCustomer.name);
+            $('#birth').val(selectedCustomer.birth);
+            $('#tel').val(selectedCustomer.tel);
+        }
+
+
+    </script>
+
 </div>
 </body>
 </html>

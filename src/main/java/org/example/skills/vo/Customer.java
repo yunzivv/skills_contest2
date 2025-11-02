@@ -20,8 +20,4 @@ public class Customer {
     private  String address;
     private  String company;
 
-    public Customer(String code, String name) {
-        this.code = code;
-        this.name = name;
-    }
 }
