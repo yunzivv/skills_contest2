@@ -67,6 +67,11 @@ public class APIController {
         return apiService.getContract();
     }
 
+    @GetMapping("/contract/{code}")
+    public List<Contract> getContracts(@PathVariable String code) {
+        return apiService.getContracts(code);
+    }
+
 
     @GetMapping("/admin")
     public List<Admin> getAdmin() {

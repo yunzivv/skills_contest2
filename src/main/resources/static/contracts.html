@@ -7,7 +7,7 @@
 </head>
 <body style="margin: 0; padding: 0;">
 <div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #eeeeee;">
-    <div style="width: 50%; height: 85%; text-align: center; padding: 20px 10px;
+    <div style="width: 60%; height: 80%; text-align: center; padding: 20px 10px;
     display: flex; flex-direction: column; align-items:center; border-radius: 10px; background-color: white;">
 
         <form id="contractsForm" action="" style="display: flex; height: 20%; width: 80%;">
@@ -52,15 +52,22 @@
         <div style="margin: 50px 0;">
             담당자:
             <form style="display: inline" action="">
-                <select name="admin" id="admin"></select>
+                <select name="admin" id="admin" style="padding: 10px 20px;"></select>
             </form>
             <button>가입</button>
             <button>삭제</button>
             <button>파일로 저장</button>
-            <button>닫기</button>
+            <a href="/management.html"
+               style="display:inline-block; background-color: #efefef; border-radius:3px; font-size: 0.8rem;
+               padding: 11px 20px; text-decoration:none; color:#111; border:1px solid #707070;">
+                닫기
+            </a>
         </div>
-        <div>
+        <div style="width: 100%;">
             < 고객 보험 계약 현황 >
+            <div id="contract_container">
+
+            </div>
         </div>
 
     </div>
@@ -102,8 +109,10 @@
         const customerList = document.getElementById('name');
         const contractList = document.getElementById('contractName');
         const adminList = document.getElementById('admin');
+        const contractContainer = document.getElementById('contract_container');
 
         let customerRows = null;
+        let contractRows = null;
 
         // fetch select list
         async function fetchSelect() {
@@ -117,7 +126,7 @@
             for (const [i, r] of customerRows.entries()) {
                 customerHtml += `<option class="name" value="${i}">${r.name}</option>`;
             }
-            fetchCustomer(0);
+            await fetchCustomer(0);
             customerList.innerHTML = customerHtml;
 
             // contract
@@ -145,13 +154,37 @@
 
         fetchSelect()
 
-        function fetchCustomer(i) {
+        async function fetchCustomer(i) {
 
             const selectedCustomer = customerRows[i];
 
             $('#code').val(selectedCustomer.code);
             $('#birth').val(selectedCustomer.birth);
             $('#tel').val(selectedCustomer.tel);
+
+            const contractsRq = `/api/contract/${selectedCustomer.code}`;
+            const contractsRes = await fetch(contractsRq, {method: 'GET'});
+            contractRows = await contractsRes.json();
+
+            let html = '<table id="customer_table" style="width:100%; border-collapse:collapse;">';
+            html += '<thead style="position: sticky;"><tr>';
+            ['customerCode', 'contractName', 'regPrice', 'regDate', 'monthPrice', 'adminName'].forEach(h => {
+                html += `<th style="border-bottom:1px solid #ddd; padding:8px; text-align:center; background-color: #eee;">${h}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            for (const r of contractRows) {
+                html += '<tr style="cursor: pointer">';
+                html += `<td class="customerCode" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.customerCode}</td>`;
+                html += `<td class="contractName" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.contractName}</td>`;
+                html += `<td class="regPrice" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${(r.regPrice).toString().substring(0, 10)}</td>`;
+                html += `<td class="regDate" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.regDate ?? ''}</td>`;
+                html += `<td class="monthPrice" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.monthPrice ?? ''}</td>`;
+                html += `<td class="adminName" style="border-bottom:1px solid #f0f0f0; padding:8px 0;">${r.adminName ?? ''}</td>`;
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            contractContainer.innerHTML = html;
         }
 
 

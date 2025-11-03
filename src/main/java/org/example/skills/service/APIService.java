@@ -27,12 +27,16 @@ public class APIService {
     );
 
     private final RowMapper<Contract> contractRowMapper = (rs, i) -> new Contract(
-//            rs.getString("customerCode"),
             rs.getString("contractName")
-//            rs.getInt("regPrice"),
-//            rs.getDate("regDate"),
-//            rs.getInt("monthPrice"),
-//            rs.getString("adminName")
+    );
+
+    private final RowMapper<Contract> contractRowMapperAll = (rs, i) -> new Contract(
+            rs.getString("customerCode"),
+            rs.getString("contractName"),
+            rs.getInt("regPrice"),
+            rs.getDate("regDate"),
+            rs.getInt("monthPrice"),
+            rs.getString("adminName")
     );
 
     private final RowMapper<Admin> adminRowMapper = (rs, i) -> new Admin(
@@ -92,6 +96,10 @@ public class APIService {
 
     public List<Contract> getContract() {
         return jdbc.query("SELECT DISTINCT contractName FROM contract", contractRowMapper);
+    }
+
+    public List<Contract> getContracts(String customercode) {
+        return jdbc.query("SELECT * FROM contract WHERE customercode = ?", contractRowMapperAll, customercode);
     }
 
     public List<Admin> getAdmin() {
