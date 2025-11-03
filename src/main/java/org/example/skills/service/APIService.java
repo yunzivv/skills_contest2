@@ -115,4 +115,11 @@ public class APIService {
 
         return rowsAffected == 1;
     }
+
+    public boolean deleteContract(String customerCode, String contractName, String regDate) {
+        String sql = "DELETE FROM contract WHERE customerCode = ? AND contractName = ? AND regDate = ? LIMIT 1";
+        int rowsAffected = jdbc.update(sql, customerCode, contractName, java.sql.Date.valueOf(regDate));
+
+        return rowsAffected == 1;
+    }
 }

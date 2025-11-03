@@ -78,6 +78,11 @@ public class APIController {
         return apiService.insertContract(customerCode, contractName, regPrice, monthPrice, adminName);
     }
 
+    @DeleteMapping("/contract")
+    public boolean deleteContract(@RequestParam String customerCode, @RequestParam String contractName, @RequestParam String regDate) {
+        return apiService.deleteContract(customerCode, contractName, regDate);
+    }
+
 
     @GetMapping("/admin")
     public List<Admin> getAdmin() {
