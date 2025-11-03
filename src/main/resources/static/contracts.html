@@ -7,66 +7,66 @@
 </head>
 <body style="margin: 0; padding: 0;">
 <div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #eeeeee;">
-    <div style="width: 60%; height: 80%; text-align: center; padding: 20px 10px;
+    <div style="width: 60%; height: 90%; text-align: center; padding: 20px 10px;
     display: flex; flex-direction: column; align-items:center; border-radius: 10px; background-color: white;">
 
-        <form id="contractsForm" action="" style="display: flex; height: 20%; width: 80%;">
-            <ul>
-                <li>
-                    <div>고객코드:</div>
-                    <input type="text" id="code" name="code" readonly>
-                </li>
-                <li>
-                    <div>고 객 명:</div>
-                    <select id="name" name="name" onchange="fetchCustomer(this.value)">
-                    </select>
-                </li>
-                <li>
-                    <div>생년월일:</div>
-                    <input type="date" id="birth" name="birth" readonly>
-                </li>
-                <li>
-                    <div>연 락 처:</div>
-                    <input type="tel" id="tel" name="tel" readonly>
-                </li>
-            </ul>
-            <ul>
-                <li>
-                    <div>보험상품:</div>
-                    <select id="contractName" name="contractName">
-                    </select>
-                </li>
+        <form id="contractsForm" onsubmit="insertContract(event)"
+              style="display: flex; flex-direction: column; justify-content: space-between; height: 30%; width: 100%;">
+            <div style="display: flex; height: 70%; width: 80%;">
+                <ul>
+                    <li>
+                        <div>고객코드:</div>
+                        <input type="text" id="code" name="customerCode" readonly>
+                    </li>
+                    <li>
+                        <div>고 객 명:</div>
+                        <select id="name" onchange="fetchCustomer(this.value)">
+                        </select>
+                    </li>
+                    <li>
+                        <div>생년월일:</div>
+                        <input type="date" id="birth" readonly>
+                    </li>
+                    <li>
+                        <div>연 락 처:</div>
+                        <input type="tel" id="tel" readonly>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div>보험상품:</div>
+                        <select id="contractName" name="contractName">
+                        </select>
+                    </li>
 
-                <li>
-                    <div>가입금액:</div>
-                    <input type="text" id="regPrice" name="regPrice">
-                </li>
+                    <li>
+                        <div>가입금액:</div>
+                        <input type="text" id="regPrice" name="regPrice">
+                    </li>
 
-                <li>
-                    <div>월보험료:</div>
-                    <input type="text" id="monthPrice" name="monthPrice">
-                </li>
-            </ul>
-        </form>
+                    <li>
+                        <div>월보험료:</div>
+                        <input type="text" id="monthPrice" name="monthPrice">
+                    </li>
+                </ul>
+            </div>
 
-        <div style="margin: 50px 0;">
-            담당자:
-            <form style="display: inline" action="">
-                <select name="admin" id="admin" style="padding: 10px 20px;"></select>
-            </form>
-            <button>가입</button>
-            <button>삭제</button>
-            <button>파일로 저장</button>
-            <a href="/management.html"
-               style="display:inline-block; background-color: #efefef; border-radius:3px; font-size: 0.8rem;
+            <div style="">
+                담당자:
+                    <select name="adminName" id="admin" style="padding: 10px 20px;"></select>
+                <button type="submit">가입</button>
+                <button type="button" id="deleteBtn">삭제</button>
+                <button type="button" id="saveBtn">파일로 저장</button>
+                <a href="/management.html"
+                   style="display:inline-block; background-color: #efefef; border-radius:3px; font-size: 0.8rem;
                padding: 11px 20px; text-decoration:none; color:#111; border:1px solid #707070;">
-                닫기
-            </a>
-        </div>
-        <div style="width: 100%;">
-            < 고객 보험 계약 현황 >
-            <div id="contract_container">
-
+                    닫기
+                </a>
+            </div>
+        </form>
+        <div style="width: 100%; ">
+            <div style="margin: 20px 0;">< 고객 보험 계약 현황 ></div>
+            <div id="contract_container" >
             </div>
         </div>
 
@@ -84,6 +84,10 @@
             padding: 0;
         }
 
+        a:hover {
+            background-color: #dddddd !important;
+        }
+
         button {
             padding: 10px 20px;
         }
@@ -91,6 +95,7 @@
         ul > li {
             display: flex;
             flex-grow: 1;
+            align-items: center;
         }
 
         ul > li > * {
@@ -99,6 +104,10 @@
             padding: 5px;
             margin: 2px;
             box-sizing: border-box;
+        }
+
+        ul > li > :last-child {
+            align-self: stretch;
         }
 
 
@@ -187,6 +196,22 @@
             contractContainer.innerHTML = html;
         }
 
+        async function insertContract(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            const formData = new FormData(formContainer);
+            const insertRes = await fetch('/api/contract', {
+                method: 'POST',
+                body: formData
+            });
+
+            const insertRs = await insertRes.json();
+
+            if(insertRs === true){
+                fetchCustomer($("#name").val());
+            }
+        }
 
     </script>
 

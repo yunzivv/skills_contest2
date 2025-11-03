@@ -72,6 +72,12 @@ public class APIController {
         return apiService.getContracts(code);
     }
 
+    @PostMapping("/contract")
+    public boolean registerContract(@RequestParam String customerCode, @RequestParam String contractName, @RequestParam int regPrice,
+                                           @RequestParam int monthPrice, @RequestParam String adminName) {
+        return apiService.insertContract(customerCode, contractName, regPrice, monthPrice, adminName);
+    }
+
 
     @GetMapping("/admin")
     public List<Admin> getAdmin() {

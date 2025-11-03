@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -104,5 +106,13 @@ public class APIService {
 
     public List<Admin> getAdmin() {
         return jdbc.query("SELECT name FROM admin", adminRowMapper);
+    }
+
+    public boolean insertContract(String customerCode, String contractName, int regPrice, int monthPrice, String adminName) {
+        Date date = java.sql.Date.valueOf(LocalDate.now());
+        String sql = "INSERT INTO contract (customerCode, contractName, regPrice, regDate, monthPrice, adminName) VALUES (?, ?, ?, ?, ?, ?)";
+        int rowsAffected = jdbc.update(sql, customerCode, contractName, regPrice, date, monthPrice, adminName);
+
+        return rowsAffected == 1;
     }
 }

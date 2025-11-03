@@ -7,49 +7,60 @@
 <body style="margin: 0; padding: 0;">
 <div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #eeeeee;">
 
-        <form action="/api/register" method="post" id="registerForm"
-              style="width: 50%; height: 50%; margin-bottom: 50px;
-               text-align: center; padding: 30px; font-size: 1.5rem;
+    <form action="/api/register" method="post" id="registerForm"
+          style="width: 50%; height: 50%; margin-bottom: 50px;
+               text-align: center; padding: 30px;
                border-radius: 10px; background-color: white;">
-            <!-- input-->
-            <div style="height: 70%; display:flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; justify-content: space-between;">
-                    고객코드:
-                    <input name="code" style="width: 50%; padding: 10px;" type="text" disabled>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    * 고객명:
-                    <input name="name" style="width: 50%; padding: 10px;" type="text" >
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    * 생년월일(YYYY-MM-DD):
-                    <input name="birth" style="width: 50%; padding: 10px;" type="date" >
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    * 연락처:
-                    <input name="tel" style="width: 50%; padding: 10px;" type="tel" >
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    주소:
-                    <input name="address" style="width: 50%; padding: 10px;" type="text">
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    회사:
-                    <input name="company" style="width: 50%; padding: 10px;" type="text">
-                </div>
-
+        <!-- input-->
+        <div style="height: 70%; display:flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between;">
+                고객코드:
+                <input name="code" style="width: 50%; padding: 10px;" type="text" disabled>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                * 고객명:
+                <input name="name" style="width: 50%; padding: 10px;" type="text">
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                * 생년월일(YYYY-MM-DD):
+                <input name="birth" style="width: 50%; padding: 10px;" type="date">
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                * 연락처:
+                <input name="tel" style="width: 50%; padding: 10px;" type="tel">
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                주소:
+                <input name="address" style="width: 50%; padding: 10px;" type="text">
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                회사:
+                <input name="company" style="width: 50%; padding: 10px;" type="text">
             </div>
 
-            <!-- button-->
-            <div style="height: 30%; display: flex; justify-content: center; align-items: end; gap: 10px;">
-                <input type="submit" value="추가" style="padding: 10px 30px; font-size: 1.2rem;
-                background-color: #1e5eff; color: white; border-radius: 10px; border: none;">
-                <a href="/management.html"
-                   style="display:inline-block; padding:10px 20px; font-size:1.2rem; background-color:#dfdfdf; border-radius:10px; text-decoration:none; color:#111;">
-                    닫기
-                </a>
-            </div>
-        </form>
+        </div>
+
+        <!-- button-->
+        <div style="height: 30%; display: flex; justify-content: center; align-items: end; gap: 10px;">
+            <input id="submit" type="submit" value="추가" style="padding: 10px 20px;
+                background-color: #1e5eff; color: white; border-radius: 3px; border: 1px solid #707070;">
+            <a href="/management.html"
+               style="display:inline-block; background-color: #efefef; border-radius:3px; font-size: 0.8rem;
+               padding: 11px 20px; text-decoration:none; color:#111; border:1px solid #707070;">
+                닫기
+            </a>
+        </div>
+    </form>
+
+    <style>
+        a:hover {
+            background-color: #dddddd !important;
+        }
+
+        #submit:hover {
+            background-color: #1a53e1 !important;
+        }
+    </style>
 
     <script>
         const form = document.getElementById('registerForm');
