@@ -1,0 +1,103 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #eff0f3;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+li {
+    list-style: none;
+}
+
+.align_center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn {
+    background: #ffffff;
+    color: #202632;
+    border-radius: 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background: #dddfe4;
+}
+
+.main_menu_wrap {
+    height: 100vh;
+    width: calc(100% / 3);
+
+    margin: auto;
+    padding: 0 5%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.main_btn {
+    width: 100%;
+    padding: 30px;
+    margin: 10px 0;
+}
+
+.cuisine_wrap {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: 10% 80% 10%;
+}
+
+.cuisine_title {
+    padding-top: 10px;
+    font-size: 3rem;
+}
+
+.cuisine_menu_wrap {
+    height: 100%;
+    width: 100%;
+    margin: auto;
+
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.cuisine_menu_wrap > a {
+    height: 80%;
+}
+
+.cuisine_menu_wrap img {
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#time {
+    background-color: #202632;
+    color: #02ff96;
+    font-size: 2rem;
+}

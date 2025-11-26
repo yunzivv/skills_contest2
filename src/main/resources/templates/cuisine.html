@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>식권 발매 프로그램</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/global.css">
+</head>
+<body>
+
+<div class="cuisine_wrap">
+    <div class="cuisine_title align_center">식권 발매 프로그램</div>
+
+    <div class="cuisine_menu_wrap">
+        <a href="/ticket?cuisine=1" class="btn" title="한식">
+            <img src="/img/menu_1.png" alt="한식">
+        </a>
+        <a href="/ticket?cuisine=2" class="btn" title="중식">
+            <img src="/img/menu_2.png" alt="중식">
+        </a>
+        <a href="/ticket?cuisine=3" class="btn" title="일식">
+            <img src="/img/menu_3.png" alt="일식">
+        </a>
+        <a href="/ticket?cuisine=4" class="btn" title="양식">
+            <img src="/img/menu_4.png" alt="양식">
+        </a>
+    </div>
+
+    <div id="time" class="align_center">현재 시간 : 0000년 00월 00일 00시 00분 00초</div>
+</div>
+
+<script>
+    function updateClock() {
+
+        let today = new Date();
+
+        let year = today.getFullYear();
+        let month = ('0' + (today.getMonth() + 1)).slice(-2);
+        let day = ('0' + today.getDate()).slice(-2);
+        let date = year + '년' + month + '월' + day + '일';
+
+        let hours = ('0' + today.getHours()).slice(-2);
+        let minutes = ('0' + today.getMinutes()).slice(-2);
+        let seconds = ('0' + today.getSeconds()).slice(-2);
+        let time = hours + '시' + minutes + '분' + seconds + '초';
+
+        $("#time").text(`현재 시간 : ${date} ${time}`);
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+</body>
+</html>

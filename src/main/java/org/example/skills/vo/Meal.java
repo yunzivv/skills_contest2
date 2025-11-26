@@ -11,13 +11,12 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Meal {
 
-    private String code;
-    private  String name;
-    private Date birth;
-    private  String tel;
-    private  String address;
-    private  String company;
+    private int cuisineNo;
+    private  String mealName;
+    private int price;
+    private  int maxCount;
+    private  int todayMeal;
 
 }
