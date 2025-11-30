@@ -5,19 +5,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Meal {
+public class Ticket {
 
-    private int mealNo;
-    private int cuisineNo;
-    private  String mealName;
+    private String orderNo;
+    private String mealName;
     private int price;
-    private  int maxCount;
-    private  int todayMeal;
+    private int orderCount;
+    private int index;
 
 }

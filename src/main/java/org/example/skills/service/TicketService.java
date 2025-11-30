@@ -1,21 +1,37 @@
 // src/main/java/org/example/skills/service/MemberService.java
 package org.example.skills.service;
 
+import org.example.skills.vo.Cuisine;
 import org.example.skills.vo.Meal;
+import org.example.skills.vo.Member;
+import org.example.skills.vo.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class APIService {
+public class TicketService {
 
     @Autowired
     private JdbcTemplate jdbc;
 
-        private final RowMapper<Meal> mealRowMapper = (rs, i) -> new Meal(
+    private final RowMapper<Member> memberRowMapper = (rs, i) -> new Member(
+            rs.getInt("memberNo"),
+            rs.getString("memberName"),
+            rs.getString("passwd")
+    );
+
+    private final RowMapper<Cuisine> cuisineRowMapper = (rs, i) -> new Cuisine(
+            rs.getInt("cuisineNo"),
+            rs.getString("cuisineName")
+    );
+
+    private final RowMapper<Meal> mealRowMapper = (rs, i) -> new Meal(
+            rs.getInt("mealNo"),
             rs.getInt("cuisineNo"),
             rs.getString("mealName"),
             rs.getInt("price"),
@@ -23,13 +39,59 @@ public class APIService {
             rs.getInt("todayMeal")
     );
 
+    private final RowMapper<Order> orderRowMapper = (rs, i) -> new Order(
+            rs.getInt("orderNo"),
+            rs.getInt("cuisineNo"),
+            rs.getInt("cuisineNo"),
+            rs.getInt("cuisineNo"),
+            rs.getInt("cuisineNo"),
+            rs.getInt("cuisineNo"),
+            rs.getTimestamp("orderDate").toLocalDateTime()
+    );
 
     public List<Meal> getMeals(int cuisine) {
 
-        String sql = "SELECT * FROM meal WHERE cuisineNo LIKE ?";
-        List<Meal> meals = jdbc.query(sql, mealRowMapper, cuisine);
-        return meals;
+        String sql = "SELECT * FROM meal WHERE (? = 0 OR cuisineNo = ?)";
+        return jdbc.query(sql, mealRowMapper, cuisine, cuisine);
     }
+
+    public List<Member> getMembers() {
+
+        String sql = "SELECT * FROM `member`";
+        return jdbc.query(sql, memberRowMapper);
+    }
+
+    public boolean verifyMember(int memberNo, String passwd) {
+        String sql = "SELECT COUNT(*) FROM member WHERE memberNo = ? AND passwd = ?";
+        Integer count = jdbc.queryForObject(sql, Integer.class, memberNo, passwd);
+        return count != null && count == 1;
+    }
+
+    public int order(int cuisineNo, int mealNo, int memberNo, int orderCount, int amount, LocalDateTime now) {
+        String sql = "INSERT INTO `order` (cuisineNo, mealNo, memberNo, orderCount, amount, orderDate) VALUES (?, ?, ?, ?, ?, ?)";
+        int rowsAffected = jdbc.update(sql, cuisineNo, mealNo, memberNo, orderCount, amount, now);
+        return rowsAffected;
+    }
+
+    public String getMealName(int mealNo) {
+        String sql = "SELECT mealName FROM meal WHERE mealNo = ?";
+        return jdbc.queryForObject(sql, String.class, mealNo);
+    }
+
+    public int getPrice(int mealNo) {
+        String sql = "SELECT price FROM meal WHERE mealNo = ?";
+        return jdbc.queryForObject(sql, Integer.class, mealNo);
+    }
+
+    public boolean registerMenu(int cuisineNo, String mealName, int price, int maxCount) {
+
+        String sql = "INSERT INTO meal (cuisineNo, mealName, price, maxCount, todayMeal) VALUES (?, ?, ?, ?, ?)";
+        int rowsAffected = jdbc.update(sql, String.valueOf(cuisineNo), mealName, price, maxCount, 1);
+
+        return rowsAffected == 1;
+    }
+
+
 
 //    private final RowMapper<Customer> customerRowMapper = (rs, i) -> new Customer(
 //            rs.getString("code"),

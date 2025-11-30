@@ -11,13 +11,8 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Meal {
+public class Cuisine {
 
-    private int mealNo;
     private int cuisineNo;
-    private  String mealName;
-    private int price;
-    private  int maxCount;
-    private  int todayMeal;
-
+    private String cuisineName;
 }

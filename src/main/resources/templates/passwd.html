@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>식권 발매 프로그램</title>
+    <link rel="stylesheet" href="/global.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<div class="manager_wrap">
+    <div class="manager_passwd_popup">
+        <div id="passwd_block"></div>
+        <div class="number_pad">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+            <div>9</div>
+            <div>0</div>
+        </div>
+        <div class="manager_confirm_pad">
+            <button id="manager_passwd_confirm">확인</button>
+            <button id="cls_btn">취소</button>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+    const passwd = "0000";
+    let input = "";
+
+    $("#cls_btn").click(function () {
+        input = "";
+        window.location.href = "/";
+    })
+
+    $(".number_pad > div").click(function () {
+        if (input.length >= 4) return;
+        $("#passwd_block").text($("#passwd_block").text() + "●");
+        input += $(this).text();
+        console.log(input)
+    })
+
+    $("#manager_passwd_confirm").click(function () {
+        if(input === passwd) {
+            window.location.href = "/manage";
+        }else{
+            alert("관리자 패스워드를 확인하십시오.");
+            input = "";
+            $("#passwd_block").text("");
+        }
+    })
+</script>
+</html>

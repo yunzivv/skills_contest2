@@ -2,15 +2,54 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <title>결제</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>식권</title>
     <link rel="stylesheet" href="/global.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 </head>
-<body>
+<body style="margin:0;padding:0;">
 
-<div></div>
-<div>
-
+<div class="ticket_wrap">
+    <ul id="ticket_list">
+        <li class="ticket" th:each="t : ${tickets}">
+            <div class="ticket_orderNo" th:text="${t.orderNo}"></div>
+            <div class="ticket_price">
+                <span>식 권</span>
+                <span th:text="${#numbers.formatInteger(t.price, 3, 'COMMA')} + '원'"></span>
+            </div>
+            <div class="ticket_menu">
+                <span th:text="'메뉴: ' + ${t.mealName}"></span>
+                <span th:text="${t.index} + '/' + ${t.orderCount}"></span>
+            </div>
+        </li>
+    </ul>
+    <div class="ticket_submit_btn">
+        <button id="print_btn">출력</button>
+        <button id="cls_btn">닫기</button>
+    </div>
 </div>
+
+<script>
+    $("#cls_btn").click(function () {
+        window.location.href = "/cuisine";
+    })
+
+    $("#print_btn").click(function () {
+
+        const target = $("#ticket_list");
+
+        html2canvas(target, {
+            scale: 2,       // 해상도 2배 (선명하게)
+            // useCORS: true,  // 외부 이미지 있을 때 필요
+        }).then(canvas => {
+            const link = document.createElement("a");
+            link.download = "tickets.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    });
+</script>
+
 </body>
 </html>

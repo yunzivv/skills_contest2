@@ -1,3 +1,4 @@
+/*normalizing*/
 body {
     margin: 0;
     padding: 0;
@@ -7,6 +8,12 @@ body {
 a {
     text-decoration: none;
     color: inherit;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 li {
@@ -36,6 +43,8 @@ li {
     background: #dddfe4;
 }
 
+
+/*index.html*/
 .main_menu_wrap {
     height: 100vh;
     width: calc(100% / 3);
@@ -59,6 +68,8 @@ li {
     margin: 10px 0;
 }
 
+
+/*cuisine.html*/
 .cuisine_wrap {
     height: 100vh;
     width: 100vw;
@@ -100,4 +111,460 @@ li {
     background-color: #202632;
     color: #02ff96;
     font-size: 2rem;
+}
+
+
+/*form.html*/
+.form_wrap {
+    width: 90%;
+    height: 100vh;
+    margin: auto;
+
+    display: grid;
+    grid-template-rows: 5% 5% 80%;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.ticket_title {
+    height: 10vh;
+    font-size: 2rem;
+}
+
+.total_price {
+    margin: 0 0 0 auto;
+    padding-left: 20px;
+    width: 40%;
+
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    font-size: 1.5rem;
+}
+
+.order_form {
+    display: grid;
+    grid-template-columns: 4fr 3fr;
+    gap: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.meal_wrap {
+    height: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+    overflow-y: auto;
+}
+
+.meal_btn {
+    width: 20%;
+    aspect-ratio: 1 / 1;
+    border: 1px solid #ddd;
+    flex-direction: column;
+    gap: 10px;
+
+    background: white;
+    cursor: pointer;
+    box-sizing: border-box;
+
+    transition: all 0.2s ease-in-out;
+}
+
+.meal_btn.disabled {
+    cursor: not-allowed; !important;
+    background: #e3e3e3;
+    color: #b1b1b1;
+}
+
+.payment {
+    display: grid;
+    grid-template-rows: repeat(2, 4fr 1fr);
+    gap: 10px;
+    min-height: 0;
+}
+
+.order_list {
+    border: 1px solid #ddd;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.order_list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order_list thead {
+    background-color: #e3e3e3;
+}
+
+.order_list tbody {
+    background: #fff;
+}
+
+.order_list tr {
+    width: 100%;
+
+}
+
+.order_list td {
+    width: 25%;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+.order_list th {
+    width: 25%;
+    border: 1px solid #ddd;
+    padding: 5px;
+    position: sticky;
+    top: 0;
+    background-color: #e3e3e3;
+    z-index: 1;
+}
+
+.selected_menu {
+    display: flex;
+}
+
+.selected_menu_box {
+    width: 50%;
+    margin: 10px;
+    padding: 0 10px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+
+    background-color: #fff;
+    border:  1px solid #ddd;
+}
+
+.selected_menu_count {
+    flex-grow: 1;
+    margin: 10px 0 10px 10px;
+    padding: 0 10px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+
+    background-color: #fff;
+    border:  1px solid #ddd;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+}
+
+.meal_btn:hover,
+.keypad > * > *:hover,
+.confirm_pad > *:hover {
+    background: #eee;
+}
+
+.keypad > * > *:active,
+.confirm_pad > *:active {
+    background: #ccc;
+}
+
+.number_pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.number_pad > *,
+.confirm_menu > *,
+.confirm_pad > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid #ddd;
+    background: #fff;
+
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.number_pad > :last-child {
+    grid-column: 1 / 4;
+}
+
+.confirm_menu {
+    display: grid;
+    grid-template-rows: 3fr 1fr;
+}
+
+.confirm_pad {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.verify {
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(69, 69, 69, 0.5);
+}
+
+.verify.hidden {
+    display: none;
+}
+
+.verify_popup {
+    width: 30%;
+    height: 30%;
+    background: #fff;
+
+    display: grid;
+    grid-template-rows: 1fr 5fr;
+}
+
+.verify_popup_title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 10px;
+    background: #ddd;
+}
+
+.verify form {
+    width: 100%;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    justify-items: center;
+    align-items: center;
+}
+
+.verify form > div {
+    width: 100%;
+    text-align: center;
+}
+
+.verify form select {
+    width: 200px;
+    height: 40px;
+}
+
+.verify form input {
+    width: 190px;
+    height: 35px;
+}
+
+#popup_cls_btn {
+    cursor: pointer;
+}
+
+
+/*ticket*/
+.ticket_wrap {
+    width: 30vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 12fr 1fr;
+
+    padding-top: 10px;
+    margin: auto;
+    box-sizing: border-box;
+}
+
+#ticket_list {
+    background-color: #fff;
+    padding: 10px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
+
+.ticket {
+    padding: 20px 10px;
+    margin: 10px;
+    border:  1px solid #111;
+    box-sizing: border-box;
+}
+
+.ticket:nth-child(odd) {
+    background: #83dcef;
+}
+
+.ticket:nth-child(even) {
+    background: #f6b2bb;
+}
+
+.ticket_price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    padding: 30px 10px;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.ticket_menu {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 30px;
+}
+
+.ticket_submit_btn,
+.manager_confirm_pad{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket_submit_btn {
+    background: #ddd;
+}
+
+.ticket_submit_btn > button,
+.manager_confirm_pad > button,
+.manage_popup > div:first-child > button,
+.manage_menu_popup > div:first-child > button{
+    padding: 10px;
+    margin: 10px;
+}
+
+
+/*manager*/
+.manager_wrap {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.manager_passwd_popup {
+    display: grid;
+    grid-template-rows: 2fr 10fr 2fr;
+
+    width: 30%;
+    height: 65%;
+    padding: 30px 50px 20px 50px;
+    gap: 10px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+#passwd_block {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    /*background: #48dfff;*/
+}
+
+.manager_confirm_pad {
+    /*background: #8211cc;*/
+}
+
+
+/*manage*/
+.manage_wrap {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.manage_popup {
+    width: 45%;
+    height: 60%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px;
+    background: #fff;
+}
+
+.manage_wrap > :not(:first-child) {
+    z-index: 2;
+}
+
+.manage_wrap > .film {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: rgba(69, 69, 69, 0.5);
+    width: 100vw;
+    height: 100vh;
+}
+
+.register_menu_popup {
+    display: grid;
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+
+    width: 40%;
+    height: 40%;
+    background: #fff;
+}
+
+.register_menu_popup > label,
+.register_menu_popup > div {
+    /*width: 50%;*/
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.manage_menu_popup {
+    width: 60%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    background: #fff;
+}
+
+.manage_menu_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.manage_menu_form,
+.manage_menu_form table{
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.manage_menu_form th,
+.manage_menu_form td {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+
+}
+
+#meal_list {
+    overflow-y: scroll;
+}
+
+#search_cuisine {
+    height: 40px;
+    width: 100px;
+}
+
+.hidden {
+    display: none; !important;
 }

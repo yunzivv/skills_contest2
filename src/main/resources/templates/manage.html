@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>식권 발매 프로그램</title>
+    <link rel="stylesheet" href="/global.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<div class="manage_wrap">
+
+    <!--manage-->
+    <div class="manage_popup hidden">
+        <div>
+            <button id="register_menu_btn">메뉴 등록</button>
+            <button id="manage_menu_btn">메뉴 관리</button>
+            <button id="payment_check_btn">결제 조회</button>
+            <button id="chart_btn">종류별 차트</button>
+            <button id="cls_btn">종 료</button>
+        </div>
+        <div>
+            <img src="/img/main.jpg" alt="manage image">
+        </div>
+    </div>
+
+    <div class="film"></div>
+
+    <!--register menu-->
+    <form class="register_menu_popup hidden">
+
+        <label for="cuisine">종류</label>
+        <select name="cuisine" id="cuisine">
+            <option value="1">한식</option>
+            <option value="2">중식</option>
+            <option value="3">일식</option>
+            <option value="4">양식</option>
+        </select>
+
+        <div>*메뉴명</div>
+        <input type="text" name="mealName" id="mealName">
+
+        <label>가격</label>
+        <select name="price" id="price">
+            <option value="">선택</option>
+        </select>
+
+
+        <label>조리가능수량</label>
+        <select name="maxCount" id="maxCount">
+            <option value="">선택</option>
+        </select>
+
+        <button type="submit">등록</button>
+        <button class="cls_popup_btn" type="button">닫기</button>
+    </form>
+
+    <!--manage menu-->
+    <div class="manage_menu_popup ">
+        <div class="manage_menu_btn">
+            <label for="search_cuisine">종류: </label>
+            <select name="종류" id="search_cuisine">
+                <option value="1">한식</option>
+                <option value="2">중식</option>
+                <option value="3">일식</option>
+                <option value="4">양식</option>
+            </select>
+            <button id="cuisine_search_btn">검색</button>
+            <button>수정</button>
+            <button>삭제</button>
+            <button>오늘의 메뉴 선정</button>
+            <button class="cls_popup_btn" type="button">닫기</button>
+        </div>
+        <form action="" class="manage_menu_form">
+            <table class="meal_table">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="check_all"></th>
+                    <th>menuName</th>
+                    <th>price</th>
+                    <th>maxCount</th>
+                    <th>todayMeal</th>
+                </tr>
+                </thead>
+
+                <tbody id="meal_list">
+                    <tr th:each="m : ${meals}" th:data-mealno="${m.mealNo}">
+                        <td><input type="checkbox"></td>
+                        <td th:text="${m.mealName}"></td>
+                        <td th:text="${m.price}"></td>
+                        <td th:text="${m.maxCount}"></td>
+                        <td th:text="${m.todayMeal} ? 'Y' : 'N'"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <!--payment check-->
+    <div class="payment_check_popup hidden">
+
+    </div>
+
+    <!--chart-->
+    <div class="chart_popup hidden">
+
+    </div>
+</div>
+
+<script>
+    const priceSelect = document.getElementById("price");
+
+    for (let price = 1000; price <= 12000; price += 500) {
+        const option = document.createElement("option");
+        option.value = price;
+        option.textContent = price.toLocaleString();
+        priceSelect.appendChild(option);
+    }
+
+    const maxCountSelect = document.getElementById("maxCount");
+    for (let maxCount = 1; maxCount <= 50; maxCount++) {
+        const option = document.createElement("option");
+        option.value = maxCount;
+        option.textContent = maxCount;
+        maxCountSelect.appendChild(option);
+    }
+
+    const meal_list = document.getElementById("meal_list");
+
+</script>
+
+<script>
+
+    function renderMeals(meals) {
+        let html = "";
+
+        meals.forEach(m => {
+            html += `
+                <tr data-mealno="${m.mealNo}">
+                    <td><input type="checkbox"></td>
+                    <td>${m.mealName}</td>
+                    <td>${m.price.toLocaleString()}</td>
+                    <td>${m.maxCount}</td>
+                    <td>${m.todayMeal ? 'Y' : 'N'}</td>
+                </tr>
+            `;
+        });
+        document.getElementById("meal_list").innerHTML = html;
+    }
+
+    function loadMeals(cuisine) {
+        $.ajax({
+            url: "/getMeals",
+            type: "GET",
+            data: { cuisine: cuisine },
+            success: function (meals) {
+                renderMeals(meals);
+            },
+            error: function () {
+                alert("서버 오류");
+            }
+        });
+    }
+
+    loadMeals(0);
+
+</script>
+
+<script>
+
+    $("#cls_btn").click(function () {
+        window.location.href = "/";
+    })
+
+    $(".cls_popup_btn").click(function () {
+        $(".manage_wrap > *").addClass("hidden");
+        $(".manage_popup").removeClass("hidden");
+    })
+
+
+    $(".register_menu_popup").submit(function (e) {
+
+        e.preventDefault();
+        if ($("#mealName").val().trim() === "") {
+            alert("메뉴명을 입력해주세요.");
+            return;
+        }
+
+        $.ajax({
+            url: "/registerMenu",
+            type: "POST",
+            data: {
+                cuisine: $("#cuisine").val(),
+                mealName: $("#mealName").val(),
+                price: $("#price").val(),
+                maxCount: $("#maxCount").val(),
+            },
+            success: function (result) {
+                if (result === true) {
+
+                    alert("메뉴가 정상적으로 등록되었습니다.");
+                    $(".register_menu_popup")[0].reset();
+
+                } else {
+                    alert("메뉴가 정상적으로 등록 되지 않았습니다.");
+                    $(".register_menu_popup")[0].reset();
+                }
+            },
+            error: function () {
+                alert("서버 오류");
+                $(".register_menu_popup")[0].reset();
+            }
+        });
+    });
+
+
+
+    $("#check_all").on("change", function () {
+        const checked = $(this).is(":checked");
+        $("#meal_list input[type='checkbox']").prop("checked", checked);
+    });
+
+    $("#cuisine_search_btn").click(function () {
+
+        let cuisine_id = $("#search_cuisine").val();
+        // console.log("cuisine_id: ", cuisine_id);
+        loadMeals(cuisine_id);
+    })
+
+    $(".manage_menu_btn").click(function () {
+
+    })
+
+
+    $(".payment_check_btn").click(function () {
+
+    })
+
+    $(".chart_btn").click(function () {
+
+    })
+</script>
+</body>
+</html>

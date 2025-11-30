@@ -16,19 +16,11 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin {
+public class Member {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+    private int memberNo;
+    private String memberName;
     private String passwd;
-    private String position;
-    private String jumin;
-    private Date inputDate;
-
-    public Admin(String name) {
-        this.name = name;
-    }
 
 }

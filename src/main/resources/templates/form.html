@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>결제</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/global.css">
+</head>
+<body>
+
+<div class="form_wrap">
+
+    <div class="ticket_title align_center"
+         th:data-cuisineno="${cuisine}"
+         th:text="${cuisine == 1 ? '한식' : (cuisine == 2 ? '중식' : (cuisine == 3 ? '일식' : '양식'))}">
+    </div>
+
+    <div class="total_price">
+        <span>총 결제 금액:</span>
+        <span id="total">0 원</span>
+    </div>
+
+    <div class="order_form">
+
+        <!--left-->
+        <div class="meal_wrap">
+            <div class="meal_btn align_center"
+                 th:each="m : ${meals}"
+                 th:classappend="${m.todayMeal == 1 and m.maxCount > 0 ? '' : 'disabled'}"
+                 th:data-mealno="${m.mealNo}"
+                 th:data-mealname="${m.mealName}"
+                 th:data-price="${m.price}"
+                 th:data-todaymeal="${m.todayMeal}"
+                 th:data-maxcount="${m.maxCount}">
+                <span th:text="${m.mealName}"></span>
+                <span th:text="${m.price} + '원'"></span>
+            </div>
+        </div>
+
+        <!--right-->
+        <div class="payment">
+
+            <!--order list-->
+            <div class="order_list">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>상품번호</th>
+                        <th>품명</th>
+                        <th>수량</th>
+                        <th>금액</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <!--selected menu-->
+            <div class="selected_menu align_center">
+                <div>선택품명:</div>
+                <div class="selected_menu_box"></div>
+                <div>수량:</div>
+                <div class="selected_menu_count"></div>
+            </div>
+
+            <!--keypad-->
+            <div class="keypad">
+                <div class="number_pad">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>0</div>
+                </div>
+                <div class="confirm_menu">
+                    <div>입력</div>
+                    <div>초기화</div>
+                </div>
+            </div>
+
+
+            <div class="confirm_pad">
+                <div id="payment_btn">결제</div>
+                <div id="cls_btn">취소</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="verify hidden">
+    <div class="verify_popup">
+        <div class="verify_popup_title">
+            <span>결제자 인증</span>
+            <span class="popup_cls_btn">X</span>
+        </div>
+        <form id="verify_form">
+            <div>
+                <label for="memberNo">사원번호</label>
+                <select name="memberNo" id="memberNo">
+                    <option th:each="member : ${members}" th:value="${member.memberNo}"
+                            th:utext="${member.memberNo}"></option>
+                </select>
+            </div>
+            <div>
+                <span>패스워드</span>
+                <input type="password" name="passwd" id="passwd">
+            </div>
+            <div>
+                <button type="submit">확인</button>
+                <button type="button" onclick="return;" class="popup_cls_btn">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    const cuisineNo = $('.ticket_title').data("cuisineno");
+    let order = {};
+    let orders = [];
+
+    let mealName;
+    let price;
+    let maxCount = 0;
+    let total = 0;
+
+    const table = $(".order_list > table");
+
+    // 취소
+    $("#cls_btn").click(function () {
+        orders = [];
+        window.location.href = "/";
+    })
+
+    // 메뉴 클릭
+    $(".meal_btn").on("click", function () {
+        if ($(this).data("todaymeal") === 0 || $(this).data("maxcount") === 0 || $(this).hasClass("disabled")) return;
+
+        order = {
+            mealNo: $(this).data("mealno"),
+            orderCount: 0,
+            amount: 0,
+        }
+
+        mealName = $(this).data("mealname");
+        price = $(this).data("price");
+        maxCount = parseInt($(this).data("maxcount"));
+
+        $(".selected_menu_box").text(mealName);
+        $(".selected_menu_count").text(0);
+    });
+
+    // 수량 입력
+    $(".number_pad").children("div").click(function () {
+        if (!mealName) return;
+
+        const after = Math.min(order.orderCount * 10 + parseInt($(this).text()), 99);
+        $(".selected_menu_count").text(after);
+        order.orderCount = after;
+    })
+
+    // 초기화
+    $(".confirm_menu > :last-child").click(function () {
+        order.orderCount = 0;
+        $(".selected_menu_count").text(0);
+    })
+
+    // 입력
+    $(".confirm_menu > :first-child").click(function () {
+
+        if (!mealName) alert("품명을 선택해주세요.");
+
+        else if (order.orderCount === 0) alert("수량을 지정해주세요.");
+
+        else if (order.orderCount > maxCount) {
+            alert("조리가능수량을 초과하였습니다.");
+            order.count = Math.min(10, maxCount);
+            $(".selected_menu_count").text(order.orderCount);
+
+        } else {
+
+            order.amount = order.orderCount * price;
+            total += order.amount;
+
+            const row = `<tr data-mealno="${order.mealNo}">
+                            <td>${order.mealNo}</td>
+                            <td>${mealName}</td>
+                            <td>${order.orderCount}</td>
+                            <td>${order.amount}</td>
+                        </tr>`;
+
+            $("table > tbody:last").append(row);
+
+            const clicked_meal = $(`.meal_btn[data-mealno="${order.mealNo}"]`);
+            clicked_meal.addClass("disabled");
+
+            $(".selected_menu_box").text("");
+            $(".selected_menu_count").text("");
+            $("#total").text(total.toLocaleString() + " 원");
+            orders.push(order);
+        }
+    })
+
+    // 삭제
+    $(document).on('dblclick', 'tbody tr', function () {
+
+        const mealNo = $(this).data("mealno");
+        console.log(mealNo);
+        const clicked_meal = $(`.meal_btn[data-mealno="${mealNo}"]`);
+
+        total -= Number($(this).find("td:nth-child(4)").text());
+        $("#total").text(total.toLocaleString() + " 원");
+        $(this).remove();
+        for (let i = 0; i < orders.length; i++) {
+            if (Number(orders[i].mealNo) === mealNo) {
+                orders.splice(i, 1);
+                i--;
+            }
+        }
+        clicked_meal.removeClass("disabled");
+    });
+
+    // 결제 팝업
+    $("#payment_btn").click(function () {
+        if (orders.length === 0) return;
+        $(".verify").removeClass("hidden");
+    })
+
+    // 팝업 닫기
+    $(".popup_cls_btn").click(function () {
+        $(".verify").addClass("hidden");
+    })
+
+    // 사용자 확인
+    $("#verify_form").submit(function (e) {
+
+        e.preventDefault();
+        $.ajax({
+            url: "/verify",
+            type: "POST",
+            data: {
+                memberNo: $("#memberNo").val(),
+                passwd: $("#passwd").val()
+            },
+            success: function (result) {
+                if (result === true) {
+
+                    alert("결제가 완료되었습니다. 식권을 출력합니다.");
+
+                    const form = $('<form>', {
+                        method: 'POST',
+                        action: '/ticket'
+                    });
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: 'order',
+                        value: JSON.stringify(orders)
+                    }).appendTo(form);
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: 'cuisineNo',
+                        value: $('.ticket_title').data("cuisineno"),
+                    }).appendTo(form);
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: 'memberNo',
+                        value: $("#memberNo").val()
+                    }).appendTo(form);
+
+                    $("body").append(form);
+                    form.submit();
+
+                    $("#verify_form")[0].reset();
+
+                } else {
+                    alert("패스워드가 일치하지 않습니다.");
+                    $("#verify_form")[0].reset();
+                }
+            },
+            error: function () {
+                alert("서버 오류");
+                $("#verify_form")[0].reset();
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>
