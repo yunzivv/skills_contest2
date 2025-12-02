@@ -1,0 +1,18 @@
+    width: 60%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+
+
+    position: absolute;
+    display: grid;
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    width: 40%;
+    height: 40%;
+    background: #fff;
+    z-index: 2;

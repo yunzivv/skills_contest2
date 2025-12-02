@@ -84,13 +84,24 @@ public class TicketService {
     }
 
     public boolean registerMenu(int cuisineNo, String mealName, int price, int maxCount) {
-
         String sql = "INSERT INTO meal (cuisineNo, mealName, price, maxCount, todayMeal) VALUES (?, ?, ?, ?, ?)";
-        int rowsAffected = jdbc.update(sql, String.valueOf(cuisineNo), mealName, price, maxCount, 1);
-
-        return rowsAffected == 1;
+        return jdbc.update(sql, String.valueOf(cuisineNo), mealName, price, maxCount, 1) == 1;
     }
 
+    public boolean deleteMenu(int i) {
+        String sql = "DELETE FROM meal WHERE mealNo = ?";
+        return jdbc.update(sql, i) == 1;
+    }
+
+    public boolean editMeal(Meal meal) {
+        String sql = "UPDATE meal SET cuisineNo = ?, mealName = ?, price = ?, maxCount = ? WHERE mealNo = ?";
+        return jdbc.update(sql, meal.getCuisineNo(), meal.getMealName(), meal.getPrice(), meal.getMaxCount(), meal.getMealNo()) == 1;
+    }
+
+    public boolean updateMenu(int mealNo, int cuisine, String mealName, int price, int maxCount) {
+        String sql = "UPDATE meal SET cuisineNo = ?, mealName = ?, price = ?, maxCount = ? WHERE mealNo = ?";
+        return jdbc.update(sql, cuisine, mealName, price, maxCount, mealNo) == 1;
+    }
 
 
 //    private final RowMapper<Customer> customerRowMapper = (rs, i) -> new Customer(

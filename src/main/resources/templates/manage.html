@@ -24,10 +24,12 @@
         </div>
     </div>
 
-    <div class="film"></div>
+    <div class="film hidden"></div>
 
     <!--register menu-->
     <form class="register_menu_popup hidden">
+
+        <input type="hidden" value="0" name="mealNo" id="mealNo">
 
         <label for="cuisine">종류</label>
         <select name="cuisine" id="cuisine">
@@ -66,9 +68,9 @@
                 <option value="4">양식</option>
             </select>
             <button id="cuisine_search_btn">검색</button>
-            <button>수정</button>
-            <button>삭제</button>
-            <button>오늘의 메뉴 선정</button>
+            <button id="menu_edit_btn">수정</button>
+            <button id="menu_delete_btn">삭제</button>
+            <button id="todayMeal_btn">오늘의 메뉴 선정</button>
             <button class="cls_popup_btn" type="button">닫기</button>
         </div>
         <form action="" class="manage_menu_form">
@@ -84,13 +86,6 @@
                 </thead>
 
                 <tbody id="meal_list">
-                    <tr th:each="m : ${meals}" th:data-mealno="${m.mealNo}">
-                        <td><input type="checkbox"></td>
-                        <td th:text="${m.mealName}"></td>
-                        <td th:text="${m.price}"></td>
-                        <td th:text="${m.maxCount}"></td>
-                        <td th:text="${m.todayMeal} ? 'Y' : 'N'"></td>
-                    </tr>
                 </tbody>
             </table>
         </form>
@@ -125,8 +120,6 @@
         maxCountSelect.appendChild(option);
     }
 
-    const meal_list = document.getElementById("meal_list");
-
 </script>
 
 <script>
@@ -136,8 +129,16 @@
 
         meals.forEach(m => {
             html += `
-                <tr data-mealno="${m.mealNo}">
-                    <td><input type="checkbox"></td>
+                <tr>
+                    <td>
+                    <input type="checkbox"
+                                   class="meal-check"
+                                   data-mealno="${m.mealNo}"
+                                   data-cuisineno="${m.cuisineNo}"
+                                   data-mealname="${m.mealName}"
+                                   data-price="${m.price}"
+                                   data-maxcount="${m.maxCount}">
+                    </td>
                     <td>${m.mealName}</td>
                     <td>${m.price.toLocaleString()}</td>
                     <td>${m.maxCount}</td>
@@ -152,7 +153,7 @@
         $.ajax({
             url: "/getMeals",
             type: "GET",
-            data: { cuisine: cuisine },
+            data: {cuisine: cuisine},
             success: function (meals) {
                 renderMeals(meals);
             },
@@ -168,6 +169,9 @@
 
 <script>
 
+    let selectedIds = [];
+    let selectedMeal = {};
+
     $("#cls_btn").click(function () {
         window.location.href = "/";
     })
@@ -175,6 +179,22 @@
     $(".cls_popup_btn").click(function () {
         $(".manage_wrap > *").addClass("hidden");
         $(".manage_popup").removeClass("hidden");
+    });
+    $("#register_menu_btn").click(function () {
+        $(".manage_wrap > *").addClass("hidden");
+        $(".register_menu_popup").removeClass("hidden");
+    })
+    $("#manage_menu_btn").click(function () {
+        $(".manage_wrap > *").addClass("hidden");
+        $(".manage_menu_popup").removeClass("hidden");
+    })
+    $("#payment_check_btn").click(function () {
+        $(".manage_wrap > *").addClass("hidden");
+        $(".payment_check_popup").removeClass("hidden");
+    })
+    $("#chart_btn").click(function () {
+        $(".manage_wrap > *").addClass("hidden");
+        $(".chart_popup").removeClass("hidden");
     })
 
 
@@ -190,6 +210,7 @@
             url: "/registerMenu",
             type: "POST",
             data: {
+                mealNo: $("#mealNo").val(),
                 cuisine: $("#cuisine").val(),
                 mealName: $("#mealName").val(),
                 price: $("#price").val(),
@@ -215,6 +236,28 @@
 
 
 
+    $(document).on("change", "input.meal-check", function () {
+
+        const id = $(this).data("mealno");
+
+        if (this.checked) {
+            selectedMeal = {
+                mealNo: id,
+                cuisineNo: $(this).data("cuisineno"),
+                mealName: $(this).data("mealname"),
+                price: $(this).data("price"),
+                maxCount: $(this).data("maxcount"),
+                todayMeal: 0
+            }
+            console.log(selectedMeal);
+            selectedIds.push(id);
+        } else {
+            selectedIds = selectedIds.filter(item => item !== id);
+        }
+        console.log($(this).data("mealno"));
+    });
+
+
     $("#check_all").on("change", function () {
         const checked = $(this).is(":checked");
         $("#meal_list input[type='checkbox']").prop("checked", checked);
@@ -223,8 +266,72 @@
     $("#cuisine_search_btn").click(function () {
 
         let cuisine_id = $("#search_cuisine").val();
-        // console.log("cuisine_id: ", cuisine_id);
         loadMeals(cuisine_id);
+    })
+
+    $("#menu_edit_btn").click(function () {
+
+        if(selectedIds.length === 0) {
+            alert("수정할 메뉴를 선택해주세요.")
+            return;
+        } else if(selectedIds.length !== 1) {
+            alert("하나씩 수정 가능합니다.")
+            return;
+        }
+
+        $(".register_menu_popup").removeClass("hidden");
+
+        $("#mealNo").val(selectedMeal.mealNo);
+        $("#cuisine").val(selectedMeal.cuisineNo);
+        $("#mealName").val(selectedMeal.mealName);
+        $("#price").val(selectedMeal.price);
+        $("#maxCount").val(selectedMeal.maxCount);
+        // $.ajax({
+        //     url: "/editMeal",
+        //     type: "POST",
+        //     data: {
+        //         meal: selectedMeal
+        //     },
+        //     success: function (result) {
+        //         if (result === true) {
+        //             alert("메뉴가 정상적으로 수정되었습니다.");
+        //             loadMeals(0);
+        //         } else {
+        //
+        //         }
+        //     },
+        //     error: function () {
+        //         alert("서버 오류");
+        //         $("#verify_form")[0].reset();
+        //     }
+        // });
+    })
+
+    $("#menu_delete_btn").click(function () {
+
+        if(selectedIds.length <= 0) {
+            alert("삭제할 메뉴를 선택해주세요.")
+            return;
+        }
+
+        $.ajax({
+            url: "/deleteMeal",
+            type: "DELETE",
+            data: {
+                mealNos: selectedIds
+            },
+            success: function (result) {
+                if (result === true) {
+                    alert("삭제가 완료되었습니다.");
+                    loadMeals(0);
+                } else {
+                    alert("삭제를 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류");
+            }
+        });
     })
 
     $(".manage_menu_btn").click(function () {

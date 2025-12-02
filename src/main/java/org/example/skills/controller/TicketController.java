@@ -98,13 +98,32 @@ public class TicketController {
 
     @PostMapping("registerMenu")
     @ResponseBody
-    public boolean registerMenu(int cuisine, String mealName, int price, int maxCount){
-        return ticketService.registerMenu(cuisine, mealName, price, maxCount);
+    public boolean registerMenu(int mealNo, int cuisine, String mealName, int price, int maxCount){
+
+        if(mealNo == 0) return ticketService.registerMenu(cuisine, mealName, price, maxCount);
+        return ticketService.updateMenu(mealNo, cuisine, mealName, price, maxCount);
     }
 
     @GetMapping("getMeals")
     @ResponseBody
     public List<Meal> getMeals(int cuisine){
+
         return ticketService.getMeals(cuisine);
+    }
+
+    @PostMapping("editMeal")
+    @ResponseBody
+    public boolean editMeal(Meal meal){
+        System.out.println(meal.getMealNo());
+        return ticketService.editMeal(meal);
+    }
+
+    @DeleteMapping("deleteMeal")
+    @ResponseBody
+    public boolean deleteMeal(int[] mealNos){
+        for(int i : mealNos){
+            if(ticketService.deleteMenu(i)) return false;
+        }
+        return true;
     }
 }
