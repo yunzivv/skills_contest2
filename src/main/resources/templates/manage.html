@@ -113,7 +113,7 @@
     }
 
     const maxCountSelect = document.getElementById("maxCount");
-    for (let maxCount = 1; maxCount <= 50; maxCount++) {
+    for (let maxCount = 0; maxCount <= 50; maxCount++) {
         const option = document.createElement("option");
         option.value = maxCount;
         option.textContent = maxCount;
@@ -197,7 +197,7 @@
         $(".chart_popup").removeClass("hidden");
     })
 
-
+    // 메뉴 등록 / 수정
     $(".register_menu_popup").submit(function (e) {
 
         e.preventDefault();
@@ -218,20 +218,31 @@
             },
             success: function (result) {
                 if (result === true) {
-
-                    alert("메뉴가 정상적으로 등록되었습니다.");
-                    $(".register_menu_popup")[0].reset();
+                    if($("#mealNo").val() === 0){
+                        alert("메뉴가 정상적으로 등록되었습니다.");
+                    }else {
+                        alert("메뉴가 정상적으로 수정되었습니다.");
+                        $(".register_menu_popup").addClass("hidden");
+                        $("#mealNo").val(0);
+                        $("input.meal-check[data-mealno='" + $("#mealNo").val() + "']").prop("checked", false);
+                    }
 
                 } else {
-                    alert("메뉴가 정상적으로 등록 되지 않았습니다.");
-                    $(".register_menu_popup")[0].reset();
+                    if($("#mealNo").val() === 0){
+                        alert("메뉴가 정상적으로 등록되지 않았습니다.");
+                    }else {
+                        alert("메뉴가 정상적으로 수정되지 않았습니다.");
+                    }
                 }
+                $(".register_menu_popup")[0].reset();
             },
             error: function () {
                 alert("서버 오류");
                 $(".register_menu_popup")[0].reset();
             }
         });
+
+        loadMeals(0);
     });
 
 
