@@ -122,7 +122,16 @@ public class TicketController {
     @ResponseBody
     public boolean deleteMeal(int[] mealNos){
         for(int i : mealNos){
-            if(ticketService.deleteMenu(i)) return false;
+            if(!ticketService.deleteMenu(i)) return false;
+        }
+        return true;
+    }
+
+    @PostMapping("todayMeals")
+    @ResponseBody
+    public boolean todayMeals(int[] mealNos){
+        for(int i : mealNos){
+            if(!ticketService.todayMeal(i)) return false;
         }
         return true;
     }

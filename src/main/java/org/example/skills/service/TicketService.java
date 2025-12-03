@@ -88,9 +88,17 @@ public class TicketService {
         return jdbc.update(sql, String.valueOf(cuisineNo), mealName, price, maxCount, 1) == 1;
     }
 
-    public boolean deleteMenu(int i) {
+    public boolean deleteMenu(int mealNo) {
         String sql = "DELETE FROM meal WHERE mealNo = ?";
-        return jdbc.update(sql, i) == 1;
+        return jdbc.update(sql, mealNo) == 1;
+    }
+
+    // 오늘의 메뉴 다 0으로
+
+    public boolean todayMeal(int mealNo) {
+        jdbc.update("UPDATE meal SET todayMeal = 0");
+        String sql = "UPDATE meal SET todayMeal = 1 WHERE mealNo = ?";
+        return jdbc.update(sql, mealNo) == 1;
     }
 
     public boolean editMeal(Meal meal) {

@@ -125,6 +125,8 @@
 <script>
 
     function renderMeals(meals) {
+
+        console.log("renderMeals");
         let html = "";
 
         meals.forEach(m => {
@@ -150,6 +152,7 @@
     }
 
     function loadMeals(cuisine) {
+        console.log("load meals");
         $.ajax({
             url: "/getMeals",
             type: "GET",
@@ -251,6 +254,12 @@
 
         const id = $(this).data("mealno");
 
+        if(selectedIds.length === 25){
+            alert("25개를 초과할 수 없습니다.")
+            $("input.meal-check[data-mealno='" + id + "']").prop("checked", false);
+            return;
+        }
+
         if (this.checked) {
             selectedMeal = {
                 mealNo: id,
@@ -260,12 +269,13 @@
                 maxCount: $(this).data("maxcount"),
                 todayMeal: 0
             }
-            console.log(selectedMeal);
+            // console.log(selectedMeal);
             selectedIds.push(id);
+
         } else {
             selectedIds = selectedIds.filter(item => item !== id);
         }
-        console.log($(this).data("mealno"));
+        // console.log($(this).data("mealno"));
     });
 
 
@@ -337,6 +347,30 @@
                     loadMeals(0);
                 } else {
                     alert("삭제를 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류");
+            }
+        });
+    })
+
+    $("#todayMeal_btn").click(function () {
+
+        console.log("today meal")
+
+        $.ajax({
+            url: "/todayMeals",
+            type: "POST",
+            data: {
+                mealNos: selectedIds
+            },
+            success: function (result) {
+                if (result === true) {
+                    console.log(result);
+                    loadMeals(0);
+                } else {
+                    console.log("오늘의 메뉴 실패");
                 }
             },
             error: function () {
