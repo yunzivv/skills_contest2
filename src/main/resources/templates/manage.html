@@ -11,7 +11,7 @@
 <div class="manage_wrap">
 
     <!--manage-->
-    <div class="manage_popup hidden">
+    <div class="manage_popup">
         <div>
             <button id="register_menu_btn">메뉴 등록</button>
             <button id="manage_menu_btn">메뉴 관리</button>
@@ -58,7 +58,7 @@
     </form>
 
     <!--manage menu-->
-    <div class="manage_menu_popup ">
+    <div class="manage_menu_popup hidden">
         <div class="manage_menu_btn">
             <label for="search_cuisine">종류: </label>
             <select name="종류" id="search_cuisine">
@@ -126,7 +126,7 @@
 
     function renderMeals(meals) {
 
-        console.log("renderMeals");
+        // console.log("renderMeals");
         let html = "";
 
         meals.forEach(m => {
@@ -152,7 +152,7 @@
     }
 
     function loadMeals(cuisine) {
-        console.log("load meals");
+        // console.log("load meals");
         $.ajax({
             url: "/getMeals",
             type: "GET",
@@ -209,11 +209,14 @@
             return;
         }
 
+        const mealNo = $("#mealNo").val();
+        const isRegister = mealNo === "0";
+
         $.ajax({
             url: "/registerMenu",
             type: "POST",
             data: {
-                mealNo: $("#mealNo").val(),
+                mealNo: mealNo,
                 cuisine: $("#cuisine").val(),
                 mealName: $("#mealName").val(),
                 price: $("#price").val(),
@@ -221,33 +224,30 @@
             },
             success: function (result) {
                 if (result === true) {
-                    if($("#mealNo").val() === 0){
+                    if(isRegister){
                         alert("메뉴가 정상적으로 등록되었습니다.");
                     }else {
-                        alert("메뉴가 정상적으로 수정되었습니다.");
                         $(".register_menu_popup").addClass("hidden");
                         $("#mealNo").val(0);
-                        $("input.meal-check[data-mealno='" + $("#mealNo").val() + "']").prop("checked", false);
+                        $("input.meal-check[data-mealno='" + mealNo + "']").prop("checked", false);
+                        alert("메뉴가 정상적으로 수정되었습니다.");
                     }
-
                 } else {
-                    if($("#mealNo").val() === 0){
+                    if(isRegister){
                         alert("메뉴가 정상적으로 등록되지 않았습니다.");
                     }else {
                         alert("메뉴가 정상적으로 수정되지 않았습니다.");
                     }
                 }
-                $(".register_menu_popup")[0].reset();
             },
             error: function () {
                 alert("서버 오류");
-                $(".register_menu_popup")[0].reset();
+
             }
         });
-
+        $(".register_menu_popup")[0].reset();
         loadMeals(0);
     });
-
 
 
     $(document).on("change", "input.meal-check", function () {
@@ -269,13 +269,12 @@
                 maxCount: $(this).data("maxcount"),
                 todayMeal: 0
             }
-            // console.log(selectedMeal);
             selectedIds.push(id);
 
         } else {
             selectedIds = selectedIds.filter(item => item !== id);
         }
-        // console.log($(this).data("mealno"));
+        console.log(selectedMeal);
     });
 
 
@@ -344,6 +343,7 @@
             success: function (result) {
                 if (result === true) {
                     alert("삭제가 완료되었습니다.");
+                    selectedMeal = {};
                     loadMeals(0);
                 } else {
                     alert("삭제를 실패했습니다.");
@@ -367,8 +367,8 @@
             },
             success: function (result) {
                 if (result === true) {
-                    console.log(result);
                     loadMeals(0);
+                    console.log(result);
                 } else {
                     console.log("오늘의 메뉴 실패");
                 }

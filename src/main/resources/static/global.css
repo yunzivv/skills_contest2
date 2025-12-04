@@ -497,9 +497,12 @@ li {
     background: #fff;
 }
 
-/*.manage_wrap > :not(:first-child) {*/
-/*    z-index: 2;*/
-/*}*/
+.manage_popup img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
 
 .manage_wrap > .film {
     position: fixed;

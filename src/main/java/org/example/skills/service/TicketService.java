@@ -1,6 +1,7 @@
 // src/main/java/org/example/skills/service/MemberService.java
 package org.example.skills.service;
 
+import jakarta.transaction.Transactional;
 import org.example.skills.vo.Cuisine;
 import org.example.skills.vo.Meal;
 import org.example.skills.vo.Member;
@@ -11,6 +12,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -93,12 +96,22 @@ public class TicketService {
         return jdbc.update(sql, mealNo) == 1;
     }
 
-    // 오늘의 메뉴 다 0으로
+    @Transactional
+    public boolean updateTodayMeals(int[] mealNos) {
 
-    public boolean todayMeal(int mealNo) {
         jdbc.update("UPDATE meal SET todayMeal = 0");
-        String sql = "UPDATE meal SET todayMeal = 1 WHERE mealNo = ?";
-        return jdbc.update(sql, mealNo) == 1;
+
+        if (mealNos.length == 0) return true;
+
+        String placeholders = String.join(",",
+                Collections.nCopies(mealNos.length, "?"));
+
+        String sql = "UPDATE meal SET todayMeal = 1 WHERE mealNo IN (" + placeholders + ")";
+        Object[] params = Arrays.stream(mealNos).boxed().toArray();
+
+        jdbc.update(sql, params);
+
+        return true;
     }
 
     public boolean editMeal(Meal meal) {

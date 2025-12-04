@@ -90,7 +90,6 @@ public class TicketController {
                         ticketService.getPrice(o.getMealNo()), o.getOrderCount(), i+1));
             }
         }
-
         model.addAttribute("tickets", tickets);
 
         return "ticket";
@@ -107,14 +106,13 @@ public class TicketController {
     @GetMapping("getMeals")
     @ResponseBody
     public List<Meal> getMeals(int cuisine){
-
         return ticketService.getMeals(cuisine);
     }
 
     @PostMapping("editMeal")
     @ResponseBody
     public boolean editMeal(Meal meal){
-        System.out.println(meal.getMealNo());
+//        System.out.println(meal.getMealNo());
         return ticketService.editMeal(meal);
     }
 
@@ -130,9 +128,9 @@ public class TicketController {
     @PostMapping("todayMeals")
     @ResponseBody
     public boolean todayMeals(int[] mealNos){
-        for(int i : mealNos){
-            if(!ticketService.todayMeal(i)) return false;
-        }
+        if(mealNos.length > 25) return false;
+        ticketService.updateTodayMeals(mealNos);
         return true;
+
     }
 }
