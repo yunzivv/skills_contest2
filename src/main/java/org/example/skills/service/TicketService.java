@@ -45,21 +45,22 @@ public class TicketService {
     private final RowMapper<Order> orderRowMapper = (rs, i) -> new Order(
             rs.getInt("orderNo"),
             rs.getInt("cuisineNo"),
-            rs.getInt("cuisineNo"),
-            rs.getInt("cuisineNo"),
-            rs.getInt("cuisineNo"),
-            rs.getInt("cuisineNo"),
+            rs.getString("cuisineName"),
+            rs.getInt("mealNo"),
+            rs.getString("mealName"),
+            rs.getInt("memberNo"),
+            rs.getString("memberName"),
+            rs.getInt("orderCount"),
+            rs.getInt("amount"),
             rs.getTimestamp("orderDate").toLocalDateTime()
     );
 
     public List<Meal> getMeals(int cuisine) {
-
         String sql = "SELECT * FROM meal WHERE (? = 0 OR cuisineNo = ?)";
         return jdbc.query(sql, mealRowMapper, cuisine, cuisine);
     }
 
     public List<Member> getMembers() {
-
         String sql = "SELECT * FROM `member`";
         return jdbc.query(sql, memberRowMapper);
     }
@@ -122,6 +123,20 @@ public class TicketService {
     public boolean updateMenu(int mealNo, int cuisine, String mealName, int price, int maxCount) {
         String sql = "UPDATE meal SET cuisineNo = ?, mealName = ?, price = ?, maxCount = ? WHERE mealNo = ?";
         return jdbc.update(sql, cuisine, mealName, price, maxCount, mealNo) == 1;
+    }
+
+    public List<Order> getOrders(String keyword) {
+
+        String sql = "SELECT cuisineName, mealName, memberName, `order`.* " +
+                "FROM `order` " +
+                "JOIN cuisine ON `order`.cuisineNo = cuisine.cuisineNo " +
+                "JOIN meal ON `order`.mealNo = meal.mealNo " +
+                "JOIN `member` ON `order`.memberNo = `member`.memberNo " +
+                "WHERE (? = '' OR mealName LIKE ?)";
+
+        String likeKeyword = "%" + keyword + "%";
+
+        return jdbc.query(sql, orderRowMapper, keyword, likeKeyword);
     }
 
 

@@ -15,16 +15,13 @@ public class Order {
 
     private int orderNo;
     private int cuisineNo;
+    private String cuisineName;
     private int mealNo;
+    private String mealName;
     private int memberNo;
+    private String memberName;
     private int orderCount;
     private int amount;
     private LocalDateTime orderDate;
 
-    public Order(int mealNo, int memberNo, int orderCount, int amount){
-        this.mealNo = mealNo;
-        this.memberNo = memberNo;
-        this.orderCount = orderCount;
-        this.amount = amount;
-    }
 }

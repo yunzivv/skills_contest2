@@ -62,6 +62,7 @@
         <div class="manage_menu_btn">
             <label for="search_cuisine">종류: </label>
             <select name="종류" id="search_cuisine">
+                <option value="0" selected>전체</option>
                 <option value="1">한식</option>
                 <option value="2">중식</option>
                 <option value="3">일식</option>
@@ -93,7 +94,31 @@
 
     <!--payment check-->
     <div class="payment_check_popup hidden">
+        <div class="payment_menu_btn">
+            <label for="keyword">메뉴명</label>
+            <input type="text" id="keyword">
+            <button id="search_btn">조회</button>
+            <button id="refresh_btn">새로고침</button>
+            <button id="print_btn">인쇄</button>
+            <button class="cls_popup_btn" type="button">닫기</button>
+        </div>
+        <form action="" class="payment_menu_form">
+            <table class="meal_table">
+                <thead>
+                <tr>
+                    <th>종류</th>
+                    <th>메뉴명</th>
+                    <th>사원명</th>
+                    <th>결제수량</th>
+                    <th>총결제금액</th>
+                    <th>결제일</th>
+                </tr>
+                </thead>
 
+                <tbody id="payment_list">
+                </tbody>
+            </table>
+        </form>
     </div>
 
     <!--chart-->
@@ -102,30 +127,31 @@
     </div>
 </div>
 
-<script>
-    const priceSelect = document.getElementById("price");
-
-    for (let price = 1000; price <= 12000; price += 500) {
-        const option = document.createElement("option");
-        option.value = price;
-        option.textContent = price.toLocaleString();
-        priceSelect.appendChild(option);
-    }
-
-    const maxCountSelect = document.getElementById("maxCount");
-    for (let maxCount = 0; maxCount <= 50; maxCount++) {
-        const option = document.createElement("option");
-        option.value = maxCount;
-        option.textContent = maxCount;
-        maxCountSelect.appendChild(option);
-    }
-
-</script>
 
 <script>
+    /** 1차 메뉴 초기 렌더링 **/
 
+    // 메뉴 등록
+    function renderOptions() {
+        const priceSelect = document.getElementById("price");
+        for (let price = 1000; price <= 12000; price += 500) {
+            const option = document.createElement("option");
+            option.value = price;
+            option.textContent = price.toLocaleString();
+            priceSelect.appendChild(option);
+        }
+
+        const maxCountSelect = document.getElementById("maxCount");
+        for (let maxCount = 0; maxCount <= 50; maxCount++) {
+            const option = document.createElement("option");
+            option.value = maxCount;
+            option.textContent = maxCount;
+            maxCountSelect.appendChild(option);
+        }
+    }
+
+    // 메뉴 관리
     function renderMeals(meals) {
-
         // console.log("renderMeals");
         let html = "";
 
@@ -150,7 +176,6 @@
         });
         document.getElementById("meal_list").innerHTML = html;
     }
-
     function loadMeals(cuisine) {
         // console.log("load meals");
         $.ajax({
@@ -166,231 +191,233 @@
         });
     }
 
-    loadMeals(0);
+    // 결제 관리
+    function renderOrders(orders) {
+        let html = "";
+
+        orders.forEach(o => {
+            html += `
+                <tr>
+                    <td>${o.cuisineName}</td>
+                    <td>${o.mealName}</td>
+                    <td>${o.memberName}</td>
+                    <td>${o.orderCount}</td>
+                    <td>${o.amount}</td>
+                    <td>${o.orderDate}</td>
+                </tr>
+            `;
+        });
+        document.getElementById("payment_list").innerHTML = html;
+    }
+    function loadOrders(keyword) {
+        // console.log("load orders");
+        $.ajax({
+            url: "/getOrders",
+            type: "GET",
+            data: {keyword: keyword},
+            success: function (orders) {
+                renderOrders(orders);
+            },
+            error: function () {
+                alert("서버 오류");
+            }
+        });
+    }
 
 </script>
 
 <script>
+    $(document).ready(function() {
+        let selectedIds = [];
+        let selectedMeal = {};
 
-    let selectedIds = [];
-    let selectedMeal = {};
-
-    $("#cls_btn").click(function () {
-        window.location.href = "/";
-    })
-
-    $(".cls_popup_btn").click(function () {
-        $(".manage_wrap > *").addClass("hidden");
-        $(".manage_popup").removeClass("hidden");
-    });
-    $("#register_menu_btn").click(function () {
-        $(".manage_wrap > *").addClass("hidden");
-        $(".register_menu_popup").removeClass("hidden");
-    })
-    $("#manage_menu_btn").click(function () {
-        $(".manage_wrap > *").addClass("hidden");
-        $(".manage_menu_popup").removeClass("hidden");
-    })
-    $("#payment_check_btn").click(function () {
-        $(".manage_wrap > *").addClass("hidden");
-        $(".payment_check_popup").removeClass("hidden");
-    })
-    $("#chart_btn").click(function () {
-        $(".manage_wrap > *").addClass("hidden");
-        $(".chart_popup").removeClass("hidden");
-    })
-
-    // 메뉴 등록 / 수정
-    $(".register_menu_popup").submit(function (e) {
-
-        e.preventDefault();
-        if ($("#mealName").val().trim() === "") {
-            alert("메뉴명을 입력해주세요.");
-            return;
-        }
-
-        const mealNo = $("#mealNo").val();
-        const isRegister = mealNo === "0";
-
-        $.ajax({
-            url: "/registerMenu",
-            type: "POST",
-            data: {
-                mealNo: mealNo,
-                cuisine: $("#cuisine").val(),
-                mealName: $("#mealName").val(),
-                price: $("#price").val(),
-                maxCount: $("#maxCount").val(),
-            },
-            success: function (result) {
-                if (result === true) {
-                    if(isRegister){
-                        alert("메뉴가 정상적으로 등록되었습니다.");
-                    }else {
-                        $(".register_menu_popup").addClass("hidden");
-                        $("#mealNo").val(0);
-                        $("input.meal-check[data-mealno='" + mealNo + "']").prop("checked", false);
-                        alert("메뉴가 정상적으로 수정되었습니다.");
-                    }
-                } else {
-                    if(isRegister){
-                        alert("메뉴가 정상적으로 등록되지 않았습니다.");
-                    }else {
-                        alert("메뉴가 정상적으로 수정되지 않았습니다.");
-                    }
-                }
-            },
-            error: function () {
-                alert("서버 오류");
-
-            }
-        });
-        $(".register_menu_popup")[0].reset();
-        loadMeals(0);
-    });
-
-
-    $(document).on("change", "input.meal-check", function () {
-
-        const id = $(this).data("mealno");
-
-        if(selectedIds.length === 25){
-            alert("25개를 초과할 수 없습니다.")
-            $("input.meal-check[data-mealno='" + id + "']").prop("checked", false);
-            return;
-        }
-
-        if (this.checked) {
-            selectedMeal = {
-                mealNo: id,
-                cuisineNo: $(this).data("cuisineno"),
-                mealName: $(this).data("mealname"),
-                price: $(this).data("price"),
-                maxCount: $(this).data("maxcount"),
-                todayMeal: 0
-            }
-            selectedIds.push(id);
-
-        } else {
-            selectedIds = selectedIds.filter(item => item !== id);
-        }
-        console.log(selectedMeal);
-    });
-
-
-    $("#check_all").on("change", function () {
-        const checked = $(this).is(":checked");
-        $("#meal_list input[type='checkbox']").prop("checked", checked);
-    });
-
-    $("#cuisine_search_btn").click(function () {
-
-        let cuisine_id = $("#search_cuisine").val();
-        loadMeals(cuisine_id);
-    })
-
-    $("#menu_edit_btn").click(function () {
-
-        if(selectedIds.length === 0) {
-            alert("수정할 메뉴를 선택해주세요.")
-            return;
-        } else if(selectedIds.length !== 1) {
-            alert("하나씩 수정 가능합니다.")
-            return;
-        }
-
-        $(".register_menu_popup").removeClass("hidden");
-
-        $("#mealNo").val(selectedMeal.mealNo);
-        $("#cuisine").val(selectedMeal.cuisineNo);
-        $("#mealName").val(selectedMeal.mealName);
-        $("#price").val(selectedMeal.price);
-        $("#maxCount").val(selectedMeal.maxCount);
-        // $.ajax({
-        //     url: "/editMeal",
-        //     type: "POST",
-        //     data: {
-        //         meal: selectedMeal
-        //     },
-        //     success: function (result) {
-        //         if (result === true) {
-        //             alert("메뉴가 정상적으로 수정되었습니다.");
-        //             loadMeals(0);
-        //         } else {
-        //
-        //         }
-        //     },
-        //     error: function () {
-        //         alert("서버 오류");
-        //         $("#verify_form")[0].reset();
-        //     }
-        // });
-    })
-
-    $("#menu_delete_btn").click(function () {
-
-        if(selectedIds.length <= 0) {
-            alert("삭제할 메뉴를 선택해주세요.")
-            return;
-        }
-
-        $.ajax({
-            url: "/deleteMeal",
-            type: "DELETE",
-            data: {
-                mealNos: selectedIds
-            },
-            success: function (result) {
-                if (result === true) {
-                    alert("삭제가 완료되었습니다.");
-                    selectedMeal = {};
+        // 메뉴
+        function updateView(key) {
+            $(".manage_wrap > *").addClass("hidden");
+            switch (key) {
+                case 'register':
+                    renderOptions();
+                    $(".register_menu_popup").removeClass("hidden");
+                    break;
+                case 'manage':
                     loadMeals(0);
-                } else {
-                    alert("삭제를 실패했습니다.");
+                    $(".manage_menu_popup").removeClass("hidden");
+                    break;
+                case 'payment':
+                    loadOrders("");
+                    $(".payment_check_popup").removeClass("hidden");
+                    break;
+                case 'chart':
+                    $(".chart_popup").removeClass("hidden");
+                    break;
+                default:
+                    $(".manage_popup").removeClass("hidden");
+                    break;
+            }
+        }
+        $(window).on('hashchange', function() {
+            const key = window.location.hash.substring(1);
+            updateView(key);
+        });
+        $(window).trigger('hashchange');
+
+
+        $(".cls_popup_btn").click(() => { window.location.hash = ''; });
+
+        // 1차 메뉴
+        $("#cls_btn").click(() => { window.location.href = "/"; });
+        $("#register_menu_btn").click(() => { window.location.hash = 'register'; });
+        $("#manage_menu_btn").click(() => { window.location.hash = 'manage'; });
+        $("#payment_check_btn").click(() => { window.location.hash = 'payment'; });
+        $("#chart_btn").click(() => { window.location.hash = 'chart'; });
+
+        // 2차: 메뉴 등록
+        $(".register_menu_popup").submit(function(e) {
+            e.preventDefault();
+            if ($("#mealName").val().trim() === "") {
+                alert("메뉴명을 입력해주세요.");
+                return;
+            }
+
+            const mealNo = $("#mealNo").val();
+            const isRegister = mealNo === "0";
+
+            $.ajax({
+                url: "/registerMenu",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function(result) {
+                    if (result === true) {
+                        if (isRegister) {
+                            alert("메뉴가 정상적으로 등록되었습니다.");
+                            $(".register_menu_popup")[0].reset();
+                            loadMeals(0);
+                        } else {
+                            alert("메뉴가 정상적으로 수정되었습니다.");
+                            $("#mealNo").val(0);
+                            $(".film").addClass("hidden");
+                            window.location.hash = 'manage';
+                        }
+                    } else {
+                        alert(isRegister ? "메뉴 등록에 실패했습니다." : "메뉴 수정에 실패했습니다.");
+                    }
+                },
+                error: () => alert("서버 오류")
+            });
+        });
+
+        // 2차: 메뉴 관리
+        $(document).on("change", "input.meal-check", function() {
+            const id = $(this).data("mealno");
+            if (this.checked) {
+                if(selectedIds.length >= 25){
+                    alert("25개를 초과할 수 없습니다.");
+                    $(this).prop("checked", false);
+                    return;
                 }
-            },
-            error: function () {
-                alert("서버 오류");
+                selectedMeal = {
+                    mealNo: id,
+                    cuisineNo: $(this).data("cuisineno"),
+                    mealName: $(this).data("mealname"),
+                    price: $(this).data("price"),
+                    maxCount: $(this).data("maxcount")
+                };
+                selectedIds.push(id);
+            } else {
+                selectedIds = selectedIds.filter(item => item !== id);
             }
         });
-    })
+        $("#cuisine_search_btn").click(() => {
+            loadMeals($("#search_cuisine").val());
+        });
+        $("#check_all").on("change", function() {
+            const checked = $(this).is(":checked");
+            const checkboxes = $("#meal_list input[type='checkbox']");
+            checkboxes.prop("checked", checked);
 
-    $("#todayMeal_btn").click(function () {
-
-        console.log("today meal")
-
-        $.ajax({
-            url: "/todayMeals",
-            type: "POST",
-            data: {
-                mealNos: selectedIds
-            },
-            success: function (result) {
-                if (result === true) {
-                    loadMeals(0);
-                    console.log(result);
-                } else {
-                    console.log("오늘의 메뉴 실패");
-                }
-            },
-            error: function () {
-                alert("서버 오류");
+            selectedIds = [];
+            if(checked) {
+                checkboxes.each(function() {
+                    selectedIds.push($(this).data("mealno"));
+                });
+            } else {
+                selectedMeal = {};
             }
         });
-    })
+        $("#menu_edit_btn").click(function() {
+            if (selectedIds.length !== 1) {
+                alert(selectedIds.length === 0 ? "수정할 메뉴를 선택해주세요." : "하나씩 수정 가능합니다.");
+                return;
+            }
+            $(".film").removeClass("hidden");
 
-    $(".manage_menu_btn").click(function () {
+            setTimeout(() => {
+                $("#mealNo").val(selectedMeal.mealNo);
+                $("#cuisine").val(selectedMeal.cuisineNo);
+                $("#mealName").val(selectedMeal.mealName);
+                $("#price").val(selectedMeal.price);
+                $("#maxCount").val(selectedMeal.maxCount);
+            }, 0);
 
-    })
+            window.location.hash = 'register';
+        });
+        $("#menu_delete_btn").click(function() {
+            if (selectedIds.length === 0) {
+                alert("삭제할 메뉴를 선택해주세요.");
+                return;
+            }
+            $.ajax({
+                url: "/deleteMeal",
+                type: "DELETE",
+                traditional: true,
+                data: { mealNos: selectedIds },
+                success: function(result) {
+                    if (result) {
+                        alert("삭제가 완료되었습니다.");
+                        selectedIds = [];
+                        selectedMeal = {};
+                        loadMeals($("#search_cuisine").val() || 0);
+                    } else {
+                        alert("삭제를 실패했습니다.");
+                    }
+                },
+                error: () => alert("서버 오류")
+            });
+        });
+        $("#todayMeal_btn").click(function() {
+             if (selectedIds.length === 0) {
+                alert("오늘의 메뉴로 선정할 메뉴를 선택해주세요.");
+                return;
+            }
+            $.ajax({
+                url: "/todayMeals",
+                type: "POST",
+                traditional: true,
+                data: { mealNos: selectedIds },
+                success: function(result) {
+                    if (result) {
+                        loadMeals($("#search_cuisine").val() || 0);
+                        alert("오늘의 메뉴가 설정되었습니다.");
+                        selectedIds = [];
+                    } else {
+                        alert("오늘의 메뉴 설정에 실패했습니다.");
+                    }
+                },
+                error: () => alert("서버 오류")
+            });
+        });
 
-
-    $(".payment_check_btn").click(function () {
-
-    })
-
-    $(".chart_btn").click(function () {
-
-    })
+        // 2차: 결제 조회
+        $("#search_btn").click(function() {
+            loadOrders($("#keyword").val());
+        })
+        $("#refresh_btn").click(function() {
+            loadOrders("");
+        })
+        $("#print_btn").click(function() {
+            window.print();
+        })
+    });
 </script>
 </body>
 </html>

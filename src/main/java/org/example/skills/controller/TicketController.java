@@ -133,4 +133,10 @@ public class TicketController {
         return true;
 
     }
+
+    @GetMapping("getOrders")
+    @ResponseBody
+    public List<Order> getOrders(String keyword){
+        return ticketService.getOrders(keyword);
+    }
 }

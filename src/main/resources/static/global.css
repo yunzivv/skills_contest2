@@ -433,7 +433,8 @@ li {
 .ticket_submit_btn > button,
 .manager_confirm_pad > button,
 .manage_popup > div:first-child > button,
-.manage_menu_popup > div:first-child > button{
+.manage_menu_popup > div:first-child > button,
+.payment_menu_btn > button {
     padding: 10px;
     margin: 10px;
 }
@@ -544,7 +545,8 @@ li {
     flex-direction: column;
 }
 
-.manage_menu_btn {
+.manage_menu_btn,
+.payment_menu_btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -575,16 +577,6 @@ li {
     width: 100px;
 }
 
-
-.hidden {
-    display: none; !important;
-}
-
-.hidden {
-    display: none; !important;
-}
-
-
 .manage_menu_form {
     flex-grow: 1;
     overflow-y: auto;
@@ -611,4 +603,44 @@ li {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
+}
+
+.payment_check_popup {
+    position: absolute; /* Added for consistent popup overlay behavior */
+    z-index: 2; /* Added for consistent popup overlay behavior */
+    width: 60%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.payment_menu_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment_menu_form {
+    width: 100%;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+
+
+
+
+
+
+
+
+.hidden {
+    display: none; !important;
 }
