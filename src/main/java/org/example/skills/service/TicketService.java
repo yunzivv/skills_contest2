@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TicketService {
@@ -139,99 +140,9 @@ public class TicketService {
         return jdbc.query(sql, orderRowMapper, keyword, likeKeyword);
     }
 
-
-//    private final RowMapper<Customer> customerRowMapper = (rs, i) -> new Customer(
-//            rs.getString("code"),
-//            rs.getString("name"),
-//            rs.getDate("birth"),
-//            rs.getString("tel"),
-//            rs.getString("address"),
-//            rs.getString("company")
-//    );
-//
-//    private final RowMapper<Contract> contractRowMapper = (rs, i) -> new Contract(
-//            rs.getString("contractName")
-//    );
-//
-//    private final RowMapper<Contract> contractRowMapperAll = (rs, i) -> new Contract(
-//            rs.getString("customerCode"),
-//            rs.getString("contractName"),
-//            rs.getInt("regPrice"),
-//            rs.getDate("regDate"),
-//            rs.getInt("monthPrice"),
-//            rs.getString("adminName")
-//    );
-//
-//    private final RowMapper<Admin> adminRowMapper = (rs, i) -> new Admin(
-//            rs.getString("name")
-//    );
-//
-//
-//    public boolean login(String name, String passwd) {
-//        Boolean ok = jdbc.queryForObject(
-//                "SELECT EXISTS(SELECT 1 FROM admin WHERE name=? AND passwd=? LIMIT 1)",
-//                Boolean.class,
-//                name, passwd
-//        );
-//        return Boolean.TRUE.equals(ok);
-//    }
-//
-//    public boolean register(String code, String name, String birth, String tel, String address, String company) {
-//
-//        String sql = "INSERT INTO customer (code, name, birth, tel, address, company) VALUES (?, ?, ?, ?, ?, ?)";
-//        int rowsAffected = jdbc.update(sql, code, name, java.sql.Date.valueOf(birth), tel, address, company);
-//
-//        return rowsAffected == 1;
-//    }
-
-
-//    public Customer getCustomer(String name) {
-//        if(name == null || name.trim().isEmpty()) {
-//            return jdbc.queryForObject("SELECT * FROM customer LIMIT 1", customerRowMapper);
-//        }
-//        return jdbc.queryForObject("SELECT * FROM customer WHERE name = ? LIMIT 1", customerRowMapper, name);
-//    }
-//
-//    public boolean updateCustomer(String code, String name, String birth, String tel, String address, String company) {
-//
-//        String sql = "UPDATE customer SET birth = ?, tel = ?, address = ?, company = ?  WHERE code = ? AND name = ?";
-//        int rowsAffected = jdbc.update(sql, java.sql.Date.valueOf(birth), tel, address, company, code, name);
-//
-//        return rowsAffected == 1;
-//    }
-//
-//    public boolean deleteCustomer(String code, String name) {
-//
-//        String sql = "DELETE FROM customer WHERE code = ? AND name = ?";
-//        int rowsAffected = jdbc.update(sql, code, name);
-//
-//        return rowsAffected == 1;
-//    }
-//
-//    public List<Contract> getContract() {
-//        return jdbc.query("SELECT DISTINCT contractName FROM contract", contractRowMapper);
-//    }
-//
-//    public List<Contract> getContracts(String customercode) {
-//        return jdbc.query("SELECT * FROM contract WHERE customercode = ?", contractRowMapperAll, customercode);
-//    }
-//
-//    public List<Admin> getAdmin() {
-//        return jdbc.query("SELECT name FROM admin", adminRowMapper);
-//    }
-//
-//    public boolean insertContract(String customerCode, String contractName, int regPrice, int monthPrice, String adminName) {
-//        Date date = java.sql.Date.valueOf(LocalDate.now());
-//        String sql = "INSERT INTO contract (customerCode, contractName, regPrice, regDate, monthPrice, adminName) VALUES (?, ?, ?, ?, ?, ?)";
-//        int rowsAffected = jdbc.update(sql, customerCode, contractName, regPrice, date, monthPrice, adminName);
-//
-//        return rowsAffected == 1;
-//    }
-//
-//    public boolean deleteContract(String customerCode, String contractName, String regDate) {
-//        String sql = "DELETE FROM contract WHERE customerCode = ? AND contractName = ? AND regDate = ? LIMIT 1";
-//        int rowsAffected = jdbc.update(sql, customerCode, contractName, java.sql.Date.valueOf(regDate));
-//
-//        return rowsAffected == 1;
-//    }
+    public List<Map<String, Object>> getOrderCountsByCuisine() {
+        String sql = "SELECT cuisine.cuisineName, COUNT(*) AS cnt FROM `order` " +
+                "JOIN cuisine ON `order`.cuisineNo = cuisine.cuisineNo GROUP BY `order`.cuisineNo";
+        return jdbc.queryForList(sql);
+    }
 }

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -138,5 +139,11 @@ public class TicketController {
     @ResponseBody
     public List<Order> getOrders(String keyword){
         return ticketService.getOrders(keyword);
+    }
+
+    @GetMapping("getChart")
+    @ResponseBody
+    public List<Map<String, Object>> getChart(){
+        return ticketService.getOrderCountsByCuisine();
     }
 }
