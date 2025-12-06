@@ -125,11 +125,12 @@
         <!--chart-->
 
         <div class="chart_popup hidden">
-
+            <div class="chart_btn">
+                <button>차트 이미지 저장</button>
+                <button class="cls_popup_btn">닫기</button>
+            </div>
             <div class="chart-container">
-
                 <canvas id="chart"></canvas>
-
             </div>
 
         </div>
@@ -160,7 +161,6 @@
 
     // 메뉴 관리
     function renderMeals(meals) {
-        // console.log("renderMeals");
         let html = "";
 
         meals.forEach(m => {
@@ -185,7 +185,6 @@
         document.getElementById("meal_list").innerHTML = html;
     }
     function loadMeals(cuisine) {
-        // console.log("load meals");
         $.ajax({
             url: "/getMeals",
             type: "GET",
@@ -218,7 +217,6 @@
         document.getElementById("payment_list").innerHTML = html;
     }
     function loadOrders(keyword) {
-        // console.log("load orders");
         $.ajax({
             url: "/getOrders",
             type: "GET",
@@ -253,8 +251,25 @@
                     data: data,
                     backgroundColor: colors
                 }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 20,
+                            padding: 15,
+                            usePointStyle: false,
+                            pointStyle: 'rect'
+                        }
+                    }
+                },
+                layout: {
+                    padding: 20
+                }
             }
         });
+
     }
     function loadChart() {
         $.ajax({
@@ -306,7 +321,6 @@
             updateView(key);
         });
         $(window).trigger('hashchange');
-
 
         $(".cls_popup_btn").click(() => { window.location.hash = ''; });
 
