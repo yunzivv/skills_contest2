@@ -358,7 +358,8 @@ li {
     height: 40px;
 }
 
-.verify form input {
+.verify form input,
+#keyword {
     width: 190px;
     height: 35px;
 }
@@ -638,7 +639,7 @@ li {
     z-index: 2;
     width: 50%;
     height: 70%;
-    padding: 20px;
+    padding: 0 10px;
     box-sizing: border-box;
     background: #fff;
     display: flex;
@@ -647,11 +648,20 @@ li {
     justify-content: center;
 }
 
-.chart-container {
+.chart_btn {
+    display: flex;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    gap: 10px;
+}
+
+.chart_container {
     position: relative;
-    width: 100%;
+    width: 70%;
     height: 80%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }

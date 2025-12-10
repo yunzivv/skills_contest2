@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/global.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -122,18 +123,16 @@
         </form>
     </div>
 
-        <!--chart-->
-
-        <div class="chart_popup hidden">
-            <div class="chart_btn">
-                <button>차트 이미지 저장</button>
-                <button class="cls_popup_btn">닫기</button>
-            </div>
-            <div class="chart-container">
-                <canvas id="chart"></canvas>
-            </div>
-
+    <!--chart-->
+    <div class="chart_popup hidden">
+        <div class="chart_btn">
+            <button class="saveChart_btn">차트 이미지 저장</button>
+            <button class="cls_popup_btn">닫기</button>
         </div>
+        <div class="chart_container">
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
 </div>
 
 
@@ -183,6 +182,7 @@
         });
         document.getElementById("meal_list").innerHTML = html;
     }
+
     function loadMeals(cuisine) {
         $.ajax({
             url: "/getMeals",
@@ -215,6 +215,7 @@
         });
         document.getElementById("payment_list").innerHTML = html;
     }
+
     function loadOrders(keyword) {
         $.ajax({
             url: "/getOrders",
@@ -234,10 +235,11 @@
         const labels = chartObjects.map(item => item.cuisineName);
         const data = chartObjects.map(item => item.cnt);
 
-        function randomColor() {
-            return `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+        function randomColor(i, total) {
+            return `hsl(${Math.floor((360 / total) * i)}, 70%, 60%)`;
         }
-        const colors = data.map(() => randomColor());
+
+        const colors = data.map((_, i) => randomColor(i, data.length));
 
         Chart.register(Chart.ArcElement, Chart.Tooltip, Chart.Legend);
         const ctx = document.getElementById('chart').getContext('2d');
@@ -252,23 +254,46 @@
                 }]
             },
             options: {
+                layout: {
+                    padding: 0
+                },
                 plugins: {
+                    title: {
+                        display: true,
+                        text: '종류별 결제건수 통계차트',
+                        font: { size: 15 },
+                        padding: { bottom: 20 }
+                    },
                     legend: {
                         position: 'right',
+                        fullSize: false,
                         labels: {
-                            boxWidth: 20,
-                            padding: 15,
+                            boxWidth: 14,
+                            padding: 10,
+                            font: {
+                                size: 12
+                            },
                             usePointStyle: false,
-                            pointStyle: 'rect'
+                            generateLabels(chart) {
+                                const { data } = chart.data.datasets[0];
+                                return chart.data.labels.map((label, i) => {
+                                    return {
+                                        text: `${label} (${data[i]}건)`,
+                                        fillStyle: colors[i],
+                                        strokeStyle: colors[i],
+                                        lineWidth: 1,
+                                        hidden: chart.getDatasetMeta(0).data[i].hidden,
+                                        index: i
+                                    };
+                                });
+                            }
                         }
                     }
                 },
-                layout: {
-                    padding: 20
-                }
+                maintainAspectRatio: false,
+                responsive: true,
             }
         });
-
     }
     function loadChart() {
         $.ajax({
@@ -287,7 +312,7 @@
 
 <script>
     /** 사용자 요청 함수 **/
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         // 전역변수
         let selectedIds = [];
@@ -318,23 +343,36 @@
                     break;
             }
         }
-        $(window).on('hashchange', function() {
+
+        $(window).on('hashchange', function () {
             const key = window.location.hash.substring(1);
             updateView(key);
         });
         $(window).trigger('hashchange');
 
-        $(".cls_popup_btn").click(() => { window.location.hash = ''; });
+        $(".cls_popup_btn").click(() => {
+            window.location.hash = '';
+        });
 
         // 1차 메뉴
-        $("#cls_btn").click(() => { window.location.href = "/"; });
-        $("#register_menu_btn").click(() => { window.location.hash = 'register'; });
-        $("#manage_menu_btn").click(() => { window.location.hash = 'manage'; });
-        $("#payment_check_btn").click(() => { window.location.hash = 'payment'; });
-        $("#chart_btn").click(() => { window.location.hash = 'chart'; });
+        $("#cls_btn").click(() => {
+            window.location.href = "/";
+        });
+        $("#register_menu_btn").click(() => {
+            window.location.hash = 'register';
+        });
+        $("#manage_menu_btn").click(() => {
+            window.location.hash = 'manage';
+        });
+        $("#payment_check_btn").click(() => {
+            window.location.hash = 'payment';
+        });
+        $("#chart_btn").click(() => {
+            window.location.hash = 'chart';
+        });
 
         // 2차: 메뉴 등록
-        $(".register_menu_popup").submit(function(e) {
+        $(".register_menu_popup").submit(function (e) {
             e.preventDefault();
             if ($("#mealName").val().trim() === "") {
                 alert("메뉴명을 입력해주세요.");
@@ -348,7 +386,7 @@
                 url: "/registerMenu",
                 type: "POST",
                 data: $(this).serialize(),
-                success: function(result) {
+                success: function (result) {
                     if (result === true) {
                         if (isRegister) {
                             alert("메뉴가 정상적으로 등록되었습니다.");
@@ -369,10 +407,10 @@
         });
 
         // 2차: 메뉴 관리
-        $(document).on("change", "input.meal-check", function() {
+        $(document).on("change", "input.meal-check", function () {
             const id = $(this).data("mealno");
             if (this.checked) {
-                if(selectedIds.length >= 25){
+                if (selectedIds.length >= 25) {
                     alert("25개를 초과할 수 없습니다.");
                     $(this).prop("checked", false);
                     return;
@@ -392,21 +430,21 @@
         $("#cuisine_search_btn").click(() => {
             loadMeals($("#search_cuisine").val());
         });
-        $("#check_all").on("change", function() {
+        $("#check_all").on("change", function () {
             const checked = $(this).is(":checked");
             const checkboxes = $("#meal_list input[type='checkbox']");
             checkboxes.prop("checked", checked);
 
             selectedIds = [];
-            if(checked) {
-                checkboxes.each(function() {
+            if (checked) {
+                checkboxes.each(function () {
                     selectedIds.push($(this).data("mealno"));
                 });
             } else {
                 selectedMeal = {};
             }
         });
-        $("#menu_edit_btn").click(function() {
+        $("#menu_edit_btn").click(function () {
             if (selectedIds.length !== 1) {
                 alert(selectedIds.length === 0 ? "수정할 메뉴를 선택해주세요." : "하나씩 수정 가능합니다.");
                 return;
@@ -423,7 +461,7 @@
 
             window.location.hash = 'register';
         });
-        $("#menu_delete_btn").click(function() {
+        $("#menu_delete_btn").click(function () {
             if (selectedIds.length === 0) {
                 alert("삭제할 메뉴를 선택해주세요.");
                 return;
@@ -432,8 +470,8 @@
                 url: "/deleteMeal",
                 type: "DELETE",
                 traditional: true,
-                data: { mealNos: selectedIds },
-                success: function(result) {
+                data: {mealNos: selectedIds},
+                success: function (result) {
                     if (result) {
                         alert("삭제가 완료되었습니다.");
                         selectedIds = [];
@@ -446,8 +484,8 @@
                 error: () => alert("서버 오류")
             });
         });
-        $("#todayMeal_btn").click(function() {
-             if (selectedIds.length === 0) {
+        $("#todayMeal_btn").click(function () {
+            if (selectedIds.length === 0) {
                 alert("오늘의 메뉴로 선정할 메뉴를 선택해주세요.");
                 return;
             }
@@ -455,8 +493,8 @@
                 url: "/todayMeals",
                 type: "POST",
                 traditional: true,
-                data: { mealNos: selectedIds },
-                success: function(result) {
+                data: {mealNos: selectedIds},
+                success: function (result) {
                     if (result) {
                         loadMeals($("#search_cuisine").val() || 0);
                         alert("오늘의 메뉴가 설정되었습니다.");
@@ -470,15 +508,32 @@
         });
 
         // 2차: 결제 조회
-        $("#search_btn").click(function() {
+        $("#search_btn").click(function () {
             loadOrders($("#keyword").val());
         })
-        $("#refresh_btn").click(function() {
+        $("#refresh_btn").click(function () {
             loadOrders("");
         })
-        $("#print_btn").click(function() {
+        $("#print_btn").click(function () {
             window.print();
         })
+
+        // 2차: 차트
+        $(".saveChart_btn").click(function () {
+            const el = document.querySelector(".chart_container");
+            html2canvas(el).then(c => {
+                const d = new Date();
+                const pad = n => String(n).padStart(2, "0");
+                const name = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-종류별결제현황차트.jpg`;
+                c.toBlob(b => {
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(b);
+                    a.download = name;
+                    a.click();
+                }, "image/jpeg");
+            });
+        });
+
     });
 </script>
 </body>
