@@ -146,4 +146,13 @@ public class TicketController {
     public List<Map<String, Object>> getChart(){
         return ticketService.getOrderCountsByCuisine();
     }
+
+    @GetMapping("member")
+    public String member() {return "member";}
+
+    @GetMapping("lastMember")
+    @ResponseBody
+    public int lastMember(){
+        return ticketService.getLastMember();
+    }
 }

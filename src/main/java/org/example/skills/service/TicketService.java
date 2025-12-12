@@ -145,4 +145,9 @@ public class TicketService {
                 "JOIN cuisine ON `order`.cuisineNo = cuisine.cuisineNo GROUP BY `order`.cuisineNo";
         return jdbc.queryForList(sql);
     }
+
+    public int getLastMember() {
+        String sql = "SELECT memberNo FROM `member` ORDER BY memberNo DESC LIMIT 1";
+        return jdbc.queryForObject(sql, Integer.class);
+    }
 }
