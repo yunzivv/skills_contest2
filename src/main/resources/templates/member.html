@@ -10,16 +10,16 @@
 
 <form class="member_form">
 
-    <input type="hidden" value="0" name="mealNo" id="mealNo">
+    <input type="text" th:value="${lastMemberNo}" name="memberNo" id="memberNo">
 
     <div>*사 원 명:</div>
-    <input type="text" name="mealName" id="memberName">
+    <input type="text" name="memberName" id="memberName">
 
     <div>*패스워드:</div>
-    <input type="text" name="mealName" id="passwd">
+    <input type="password" name="passwd" id="passwd">
 
-    <div>*패스워드 재입력:</div>
-    <input type="text" name="mealName" id="passwdCheck">
+    <div>*패스워드 재입력:<span id="result"></span></div>
+    <input type="password" name="passwdCheck" id="passwdCheck">
 
     <button type="submit">등록</button>
     <button class="cls_popup_btn" type="button">닫기</button>

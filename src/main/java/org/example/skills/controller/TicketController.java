@@ -64,7 +64,7 @@ public class TicketController {
     @PostMapping("verify")
     @ResponseBody
     public boolean verify(int memberNo, String passwd){
-        System.out.println(memberNo + "  " + passwd + " " + ticketService.verifyMember(memberNo, passwd));
+//        System.out.println(memberNo + "  " + passwd + " " + ticketService.verifyMember(memberNo, passwd));
         return ticketService.verifyMember(memberNo, passwd);
     }
 
@@ -148,11 +148,8 @@ public class TicketController {
     }
 
     @GetMapping("member")
-    public String member() {return "member";}
-
-    @GetMapping("lastMember")
-    @ResponseBody
-    public int lastMember(){
-        return ticketService.getLastMember();
+    public String member(Model model) {
+        model.addAttribute("lastMemberNo", ticketService.getLastMember() + 1);
+        return "member";
     }
 }
