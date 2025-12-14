@@ -442,7 +442,8 @@ li {
 
 
 /*manager*/
-.manager_wrap {
+.manager_wrap,
+.member_wrap {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -516,8 +517,8 @@ li {
     height: 100vh;
 }
 
-.register_menu_popup {
-
+.register_menu_popup,
+.member_form {
     position: absolute;
     z-index: 3;
     display: grid;
@@ -665,6 +666,23 @@ li {
     justify-content: center;
     align-items: center;
 }
+
+
+/*register member*/
+.member_form > div{
+    display: flex;
+    align-items: center;
+}
+
+#memberNo {
+    background: #ddd;
+    border: 1px solid #555;
+    border-radius: 1px;
+}
+
+#consistency {color: blue;}
+#inconsistency {color: red;}
+
 
 
 

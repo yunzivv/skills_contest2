@@ -150,4 +150,9 @@ public class TicketService {
         String sql = "SELECT memberNo FROM `member` ORDER BY memberNo DESC LIMIT 1";
         return jdbc.queryForObject(sql, Integer.class);
     }
+
+    public boolean registerMember(String memberName, String passwd) {
+        String sql = "INSERT INTO `member` (memberName, passwd) VALUES (?, ?)";
+        return jdbc.update(sql, memberName, passwd) == 1;
+    }
 }

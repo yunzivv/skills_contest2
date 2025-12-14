@@ -8,22 +8,99 @@
 </head>
 <body>
 
-<form class="member_form">
+<div class="member_wrap">
+    <form class="member_form">
 
-    <input type="text" th:value="${lastMemberNo}" name="memberNo" id="memberNo">
+        <div>사원번호:</div>
+        <input type="text" th:value="${lastMemberNo}" name="memberNo" id="memberNo">
 
-    <div>*사 원 명:</div>
-    <input type="text" name="memberName" id="memberName">
+        <div>*사 원 명:</div>
+        <input type="text" name="memberName" id="memberName">
 
-    <div>*패스워드:</div>
-    <input type="password" name="passwd" id="passwd">
+        <div>*패스워드:</div>
+        <input type="password" name="passwd" id="passwd">
 
-    <div>*패스워드 재입력:<span id="result"></span></div>
-    <input type="password" name="passwdCheck" id="passwdCheck">
+        <div>*패스워드 재입력 :
+            <span id="consistency" class="hidden"> 일치</span>
+            <span id="inconsistency" class="hidden"> 불일치</span>
+        </div>
+        <input type="password" name="passwdCheck" id="passwdCheck">
 
-    <button type="submit">등록</button>
-    <button class="cls_popup_btn" type="button">닫기</button>
-</form>
+        <button id="register" type="button">등록</button>
+        <button id="cls_btn" type="button">닫기</button>
+    </form>
+</div>
+
+<script>
+    $(function () {
+
+        $("#passwd").on("input", function () {
+            const val = $("#passwd").val();
+            if (!/^\d{0,4}$/.test(val)) {
+                $("#passwd").val("");
+            }
+        });
+
+        $("#passwdCheck").on("input", function () {
+            const pw = $("#passwd").val();
+            const pwCheck = $("#passwdCheck").val();
+
+            $("#consistency").addClass("hidden");
+            $("#inconsistency").addClass("hidden");
+
+            if (pwCheck.length === 0) return;
+
+            if (pw === pwCheck) {
+                $("#consistency").removeClass("hidden");
+            } else {
+                $("#inconsistency").removeClass("hidden");
+            }
+        });
+
+        $("#register").click(function () {
+
+            const memberName = $("#memberName").val().trim();
+            const pw = $("#passwd").val();
+            const pwCheck = $("#passwdCheck").val();
+
+            if (!/^\d{4}$/.test(pw) || pw !== pwCheck) {
+                alert("패스워드 확인 요망");
+                return;
+            }
+
+            if (memberName === "" || pw === "") {
+                alert("필수 항목(*) 누락");
+                return;
+            }
+
+            $.ajax({
+                url: "/member",
+                type: "POST",
+                data: {
+                    memberNo: $("#memberNo").val(),
+                    memberName: memberName,
+                    passwd: pw
+                },
+                success: function (result) {
+                    if (result === true) {
+                        alert("사원이 등록되었습니다.");
+                        location.href = "/";
+                    } else {
+                        alert("등록 실패");
+                    }
+                },
+                error: function () {
+                    alert("서버 오류");
+                }
+            });
+        });
+
+        $("#cls_btn").click(function () {
+            location.href = "/";
+        });
+
+    });
+</script>
 
 </body>
 </html>

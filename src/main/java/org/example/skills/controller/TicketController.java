@@ -148,8 +148,14 @@ public class TicketController {
     }
 
     @GetMapping("member")
-    public String member(Model model) {
+    public String getMember(Model model) {
         model.addAttribute("lastMemberNo", ticketService.getLastMember() + 1);
         return "member";
+    }
+
+    @PostMapping("member")
+    @ResponseBody
+    public boolean registerMember(Member member){
+        return ticketService.registerMember(member.getMemberName(), member.getPasswd());
     }
 }
